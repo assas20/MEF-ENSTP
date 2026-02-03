@@ -211,6 +211,24 @@
         .trilingual-name .fr { font-family: 'Playfair Display', serif; }
         .trilingual-name .ar { font-family: 'Noto Naskh Arabic', serif; font-size: 1.1em; }
         .trilingual-name .en { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; }
+        .pdf-container {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            margin-top: 1rem;
+        }
+        .pdf-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .pdf-item {
+            transition: all 0.2s ease;
+        }
+        .pdf-item:hover {
+            background-color: #FAF9F6;
+            transform: translateX(5px);
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -655,7 +673,7 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Examens et Contrôle Continu 📝</h2>
-                    <p class="text-gray-600">Base de données nationale des examens</p>
+                    <p class="text-gray-600">Base de données nationale des examens en PDF</p>
                 </div>
 
                 <!-- ENSTP Featured -->
@@ -687,9 +705,6 @@
                                 <button onclick="showUniversityExams('ENSTP')" class="px-6 py-3 bg-enstp-gold text-enstp-navy rounded-xl font-bold hover:bg-opacity-90 transition-all">
                                     <i class="fas fa-file-alt mr-2"></i>Voir les examens
                                 </button>
-                                <a href="https://www.enstp.edu.dz" target="_blank" class="px-6 py-3 border-2 border-white/30 rounded-xl font-semibold hover:bg-white/10 transition-all">
-                                    <i class="fas fa-external-link-alt mr-2"></i>Site web
-                                </a>
                             </div>
                         </div>
                     </div>
@@ -702,12 +717,12 @@
             </div>
         </section>
 
-        <!-- COURSES SECTION - NEW DESIGN -->
+        <!-- COURSES SECTION - NEW DESIGN WITH PDF -->
         <section id="courses-section" class="hidden py-16 bg-enstp-gray">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Cours 📑</h2>
-                    <p class="text-gray-600">Cours et TD des universités algériennes</p>
+                    <p class="text-gray-600">Cours et TD des universités algériennes (Fichiers PDF)</p>
                 </div>
 
                 <!-- Filter -->
@@ -725,6 +740,74 @@
                 </div>
             </div>
         </section>
+
+        <!-- PDF VIEWER MODAL -->
+        <div id="pdfModal" class="fixed inset-0 z-50 hidden">
+            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closePDFModal()"></div>
+            <div class="absolute inset-4 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+                <div class="bg-enstp-navy text-white p-4 flex justify-between items-center">
+                    <h3 id="pdfModalTitle" class="font-bold text-lg">Visualisation du PDF</h3>
+                    <button onclick="closePDFModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="flex-1 overflow-hidden" id="pdfViewerContainer">
+                    <iframe id="pdfViewer" class="w-full h-full border-0"></iframe>
+                </div>
+                <div class="bg-gray-50 p-4 flex justify-between items-center">
+                    <span id="pdfFileName" class="text-sm text-gray-600"></span>
+                    <a id="pdfDownloadLink" href="#" download class="px-6 py-2 bg-enstp-gold text-enstp-navy rounded-xl font-semibold hover:bg-opacity-90 transition-all">
+                        <i class="fas fa-download mr-2"></i>Télécharger
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- UNIVERSITY PDF MODAL -->
+        <div id="universityPDFModal" class="fixed inset-0 z-50 hidden">
+            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUniversityPDFModal()"></div>
+            <div class="absolute inset-0 flex items-center justify-center p-4">
+                <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+                    <div id="universityPDFHeader" class="bg-gradient-to-r from-enstp-navy to-enstp-blue p-6 text-white">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h2 id="uniPDFTitle" class="text-2xl font-bold mb-2">Université</h2>
+                                <p id="uniPDFSubtitle" class="text-enstp-gold">Cours et TD disponibles</p>
+                            </div>
+                            <button onclick="closeUniversityPDFModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="p-6 overflow-y-auto flex-1">
+                        <div class="grid md:grid-cols-2 gap-6">
+                            <div>
+                                <h3 class="font-bold text-lg text-enstp-navy mb-4 flex items-center">
+                                    <i class="fas fa-book mr-2 text-enstp-gold"></i>Cours Magistraux (Cours)
+                                </h3>
+                                <div id="uniCoursesList" class="pdf-list space-y-2">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-lg text-enstp-navy mb-4 flex items-center">
+                                    <i class="fas fa-tasks mr-2 text-enstp-blue"></i>Travaux Dirigés (TD)
+                                </h3>
+                                <div id="uniTDList" class="pdf-list space-y-2">
+                                    <!-- Populated dynamically -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mt-6 p-4 bg-enstp-cream rounded-xl">
+                            <p class="text-sm text-gray-700">
+                                <i class="fas fa-info-circle mr-2 text-enstp-gold"></i>
+                                Cliquez sur un fichier pour le visualiser ou le télécharger. Les fichiers PDF doivent être placés dans le dossier <code>pdf/[universite]/</code>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- LIBRARY SECTION -->
         <section id="library-section" class="hidden py-16 bg-enstp-gray">
@@ -790,7 +873,7 @@
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
                     <div>
                         <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-2">Travaux Dirigés</h2>
-                        <p class="text-gray-600">Séries complètes avec solutions détaillées</p>
+                        <p class="text-gray-600">Séries complètes avec solutions détaillées (PDF)</p>
                     </div>
                     
                     <div class="mt-6 md:mt-0 bg-white rounded-full p-1 shadow-lg border border-gray-200">
@@ -809,8 +892,12 @@
                             <h3 class="font-bold text-xl text-enstp-navy mb-2">Éléments Barres et Ressorts</h3>
                             <p class="text-gray-600 text-sm mb-4">Introduction aux éléments finis unidimensionnels</p>
                             <div class="grid grid-cols-2 gap-3">
-                                <button class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold"><i class="fas fa-file-pdf mr-2"></i>PDF</button>
-                                <button class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white"><i class="fas fa-lightbulb mr-2"></i>Solution</button>
+                                <button onclick="openPDF('td/TD01_Sujet.pdf', 'TD 01 - Sujet')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/TD01_Solution.pdf', 'TD 01 - Solution')" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution
+                                </button>
                             </div>
                         </div>
                         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
@@ -821,18 +908,24 @@
                             <h3 class="font-bold text-xl text-enstp-navy mb-2">Barres en Treillis</h3>
                             <p class="text-gray-600 text-sm mb-4">Structures réticulées planes et spatiales</p>
                             <div class="grid grid-cols-2 gap-3">
-                                <button class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold"><i class="fas fa-file-pdf mr-2"></i>PDF</button>
-                                <button class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white"><i class="fas fa-lightbulb mr-2"></i>Solution</button>
+                                <button onclick="openPDF('td/TD02_Sujet.pdf', 'TD 02 - Sujet')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/TD02_Solution.pdf', 'TD 02 - Solution')" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution
+                                </button>
                             </div>
                         </div>
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all opacity-60">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
                             <div class="flex items-start justify-between mb-4">
                                 <div class="w-12 h-12 rounded-xl bg-gray-400 text-white flex items-center justify-center font-bold text-xl">03</div>
                                 <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">Verrouillé</span>
                             </div>
                             <h3 class="font-bold text-xl text-enstp-navy mb-2">Éléments Poutres</h3>
                             <p class="text-gray-600 text-sm mb-4">Flexion et moment fléchissant</p>
-                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed"><i class="fas fa-lock mr-2"></i>Complétez TD 02</button>
+                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">
+                                <i class="fas fa-lock mr-2"></i>Complétez TD 02
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -842,16 +935,6 @@
                         <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
                             <div class="w-12 h-12 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-xl mb-4">01</div>
                             <h3 class="font-bold text-xl text-enstp-navy mb-2">Structures 2D</h3>
-                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
-                        </div>
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
-                            <div class="w-12 h-12 rounded-xl bg-pink-600 text-white flex items-center justify-center font-bold text-xl mb-4">02</div>
-                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Fonctions de Formes</h3>
-                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
-                        </div>
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
-                            <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl mb-4">03</div>
-                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Isoparamétrique</h3>
                             <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
                         </div>
                     </div>
@@ -872,8 +955,12 @@
                         <h3 class="font-bold text-lg mb-2">Analyse d'un portique simple</h3>
                         <p class="text-gray-600 text-sm mb-4">Application de la MEF sur une structure 2D à 3 éléments barres</p>
                         <div class="flex gap-3">
-                            <button class="flex-1 py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold"><i class="fas fa-download mr-2"></i>Sujet</button>
-                            <button class="flex-1 py-2 rounded-lg border-2 border-enstp-gold text-enstp-gold text-sm font-semibold hover:bg-enstp-gold hover:text-white"><i class="fas fa-upload mr-2"></i>Rendre</button>
+                            <button onclick="openPDF('devoirs/DM01.pdf', 'DM 01 - Sujet')" class="flex-1 py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-download mr-2"></i>Sujet PDF
+                            </button>
+                            <button class="flex-1 py-2 rounded-lg border-2 border-enstp-gold text-enstp-gold text-sm font-semibold hover:bg-enstp-gold hover:text-white">
+                                <i class="fas fa-upload mr-2"></i>Rendre
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -903,13 +990,6 @@
                                 <div>
                                     <h4 class="font-bold text-lg text-enstp-navy">Éléments Finis Unidimensionnels</h4>
                                     <p class="text-gray-600 mt-2">Éléments barres, ressorts et poutres</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-4 p-6 bg-enstp-cream rounded-xl border-l-4 border-purple-600">
-                                <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">3</div>
-                                <div>
-                                    <h4 class="font-bold text-lg text-enstp-navy">Applications aux Structures Réticulées</h4>
-                                    <p class="text-gray-600 mt-2">Portiques, treillis plans et spatiaux</p>
                                 </div>
                             </div>
                         </div>
@@ -1086,47 +1166,334 @@
         </footer>
     </main>
 
-    <!-- MODALS -->
-    <div id="universityModal" class="fixed inset-0 z-50 hidden">
-        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUniversityModal()"></div>
-        <div class="absolute inset-0 flex items-center justify-center p-4">
-            <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
-                <div id="universityModalContent"></div>
-            </div>
-        </div>
-    </div>
-
     <script>
-        // Data
+        // Data des universités avec structure de fichiers PDF
         const universitiesData = [
-            { name: "USTHB", fullName: "Université des Sciences et Technologie Houari Boumediene", city: "Alger", exams: 32, courses: 15, website: "https://www.usthb.dz", color: "from-blue-600 to-blue-800", region: "algiers" },
-            { name: "ENA", fullName: "École Nationale d'Administration", city: "Alger", exams: 18, courses: 8, website: "https://www.ena.dz", color: "from-green-600 to-green-800", region: "algiers" },
-            { name: "ENP", fullName: "École Nationale Polytechnique", city: "Alger", exams: 28, courses: 20, website: "https://www.enp.edu.dz", color: "from-purple-600 to-purple-800", region: "algiers" },
-            { name: "ENAU", fullName: "École Nationale d'Architecture et d'Urbanisme", city: "Alger", exams: 15, courses: 12, website: "https://www.enau.dz", color: "from-teal-600 to-teal-800", region: "algiers" },
-            { name: "UMMTO", fullName: "Université Mouloud Mammeri", city: "Tizi Ouzou", exams: 22, courses: 10, website: "https://www.ummto.dz", color: "from-red-600 to-red-800", region: "algiers" },
-            { name: "UC", fullName: "Université Constantine 1 - Frères Mentouri", city: "Constantine", exams: 35, courses: 18, website: "https://www.uc Constantine.dz", color: "from-orange-600 to-orange-800", region: "constantine" },
-            { name: "UMC", fullName: "Université Mentouri Constantine", city: "Constantine", exams: 30, courses: 16, website: "https://www.umc.edu.dz", color: "from-yellow-600 to-yellow-800", region: "constantine" },
-            { name: "USTO", fullName: "Université des Sciences et de la Technologie", city: "Oran", exams: 25, courses: 14, website: "https://www.usto.dz", color: "from-indigo-600 to-indigo-800", region: "oran" },
-            { name: "UoB", fullName: "Université d'Oran 1", city: "Oran", exams: 20, courses: 12, website: "https://www.univ-oran.dz", color: "from-pink-600 to-pink-800", region: "oran" },
-            { name: "UFAS", fullName: "Université Ferhat Abbas", city: "Sétif", exams: 24, courses: 13, website: "https://www.ufas.dz", color: "from-cyan-600 to-cyan-800", region: "other" },
-            { name: "UAB", fullName: "Université Abou Bekr Belkaïd", city: "Tlemcen", exams: 19, courses: 11, website: "https://www.univ-tlemcen.dz", color: "from-emerald-600 to-emerald-800", region: "other" },
-            { name: "UMK", fullName: "Université Mohamed Khider", city: "Biskra", exams: 15, courses: 9, website: "https://www.univ-biskra.dz", color: "from-lime-600 to-lime-800", region: "other" },
-            { name: "UMA", fullName: "Université de Mostaganem", city: "Mostaganem", exams: 16, courses: 10, website: "https://www.univ-mosta.dz", color: "from-amber-600 to-amber-800", region: "other" },
-            { name: "UBMA", fullName: "Université Badji Mokhtar", city: "Annaba", exams: 21, courses: 12, website: "https://www.univ-annaba.dz", color: "from-rose-600 to-rose-800", region: "other" },
-            { name: "UMBB", fullName: "Université M'hamed Bougara", city: "Boumerdès", exams: 26, courses: 15, website: "https://www.univ-boumerdes.dz", color: "from-violet-600 to-violet-800", region: "algiers" },
-            { name: "USDB", fullName: "Université Saad Dahleb", city: "Blida", exams: 23, courses: 14, website: "https://www.univ-blida.dz", color: "from-sky-600 to-sky-800", region: "algiers" },
-            { name: "UHL", fullName: "Université Hassiba Ben Bouali", city: "Chlef", exams: 17, courses: 10, website: "https://www.univ-chlef.dz", color: "from-slate-600 to-slate-800", region: "other" },
-            { name: "UJIK", fullName: "Université Jijel", city: "Jijel", exams: 14, courses: 8, website: "https://www.univ-jijel.dz", color: "from-fuchsia-600 to-fuchsia-800", region: "other" },
-            { name: "UTM", fullName: "Université Tissemsilt", city: "Tissemsilt", exams: 11, courses: 7, website: "https://www.univ-tissemsilt.dz", color: "from-zinc-600 to-zinc-800", region: "other" }
+            { 
+                name: "USTHB", 
+                fullName: "Université des Sciences et Technologie Houari Boumediene", 
+                city: "Alger", 
+                exams: 32, 
+                courses: 15, 
+                color: "from-blue-600 to-blue-800", 
+                region: "algiers",
+                pdfPath: "pdf/usthb/",
+                courseFiles: [
+                    { name: "Cours MEF - Chapitre 1", file: "cours_chapitre1.pdf" },
+                    { name: "Cours MEF - Chapitre 2", file: "cours_chapitre2.pdf" },
+                    { name: "Cours MEF - Chapitre 3", file: "cours_chapitre3.pdf" },
+                    { name: "Formulaire MEF", file: "formulaire.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD 01 - Éléments Barres", file: "td01_barres.pdf" },
+                    { name: "TD 02 - Treillis", file: "td02_treillis.pdf" },
+                    { name: "TD 03 - Poutres", file: "td03_poutres.pdf" }
+                ]
+            },
+            { 
+                name: "ENA", 
+                fullName: "École Nationale d'Administration", 
+                city: "Alger", 
+                exams: 18, 
+                courses: 8, 
+                color: "from-green-600 to-green-800", 
+                region: "algiers",
+                pdfPath: "pdf/ena/",
+                courseFiles: [
+                    { name: "Introduction MEF", file: "intro_mef.pdf" },
+                    { name: "Applications Numériques", file: "applications.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD - Structures", file: "td_structures.pdf" }
+                ]
+            },
+            { 
+                name: "ENP", 
+                fullName: "École Nationale Polytechnique", 
+                city: "Alger", 
+                exams: 28, 
+                courses: 20, 
+                color: "from-purple-600 to-purple-800", 
+                region: "algiers",
+                pdfPath: "pdf/enp/",
+                courseFiles: [
+                    { name: "Cours Complet MEF", file: "cours_complet.pdf" },
+                    { name: "Matrice de Rigidité", file: "matrice_rigidite.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD 01", file: "td01.pdf" },
+                    { name: "TD 02", file: "td02.pdf" }
+                ]
+            },
+            { 
+                name: "ENAU", 
+                fullName: "École Nationale d'Architecture et d'Urbanisme", 
+                city: "Alger", 
+                exams: 15, 
+                courses: 12, 
+                color: "from-teal-600 to-teal-800", 
+                region: "algiers",
+                pdfPath: "pdf/enau/",
+                courseFiles: [
+                    { name: "MEF pour Architectes", file: "mef_archi.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Applications", file: "td_applications.pdf" }
+                ]
+            },
+            { 
+                name: "UMMTO", 
+                fullName: "Université Mouloud Mammeri", 
+                city: "Tizi Ouzou", 
+                exams: 22, 
+                courses: 10, 
+                color: "from-red-600 to-red-800", 
+                region: "algiers",
+                pdfPath: "pdf/ummto/",
+                courseFiles: [
+                    { name: "Cours MEF Tizi Ouzou", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "Série TD 01", file: "serie_td01.pdf" }
+                ]
+            },
+            { 
+                name: "UC", 
+                fullName: "Université Constantine 1 - Frères Mentouri", 
+                city: "Constantine", 
+                exams: 35, 
+                courses: 18, 
+                color: "from-orange-600 to-orange-800", 
+                region: "constantine",
+                pdfPath: "pdf/uc/",
+                courseFiles: [
+                    { name: "Cours MEF Constantine", file: "cours_mef.pdf" },
+                    { name: "Rappels Mathématiques", file: "rappels maths.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD 01", file: "td01.pdf" },
+                    { name: "TD 02", file: "td02.pdf" }
+                ]
+            },
+            { 
+                name: "UMC", 
+                fullName: "Université Mentouri Constantine", 
+                city: "Constantine", 
+                exams: 30, 
+                courses: 16, 
+                color: "from-yellow-600 to-yellow-800", 
+                region: "constantine",
+                pdfPath: "pdf/umc/",
+                courseFiles: [
+                    { name: "Cours MEF", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Structuraux", file: "td_structuraux.pdf" }
+                ]
+            },
+            { 
+                name: "USTO", 
+                fullName: "Université des Sciences et de la Technologie", 
+                city: "Oran", 
+                exams: 25, 
+                courses: 14, 
+                color: "from-indigo-600 to-indigo-800", 
+                region: "oran",
+                pdfPath: "pdf/usto/",
+                courseFiles: [
+                    { name: "Cours MEF Oran", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD 01", file: "td01.pdf" }
+                ]
+            },
+            { 
+                name: "UoB", 
+                fullName: "Université d'Oran 1", 
+                city: "Oran", 
+                exams: 20, 
+                courses: 12, 
+                color: "from-pink-600 to-pink-800", 
+                region: "oran",
+                pdfPath: "pdf/uob/",
+                courseFiles: [
+                    { name: "Cours MEF", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Exercices", file: "td_exercices.pdf" }
+                ]
+            },
+            { 
+                name: "UFAS", 
+                fullName: "Université Ferhat Abbas", 
+                city: "Sétif", 
+                exams: 24, 
+                courses: 13, 
+                color: "from-cyan-600 to-cyan-800", 
+                region: "other",
+                pdfPath: "pdf/ufas/",
+                courseFiles: [
+                    { name: "Cours MEF Sétif", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Pratiques", file: "td_pratiques.pdf" }
+                ]
+            },
+            { 
+                name: "UAB", 
+                fullName: "Université Abou Bekr Belkaïd", 
+                city: "Tlemcen", 
+                exams: 19, 
+                courses: 11, 
+                color: "from-emerald-600 to-emerald-800", 
+                region: "other",
+                pdfPath: "pdf/uab/",
+                courseFiles: [
+                    { name: "Cours MEF Tlemcen", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Applications", file: "td_applications.pdf" }
+                ]
+            },
+            { 
+                name: "UMK", 
+                fullName: "Université Mohamed Khider", 
+                city: "Biskra", 
+                exams: 15, 
+                courses: 9, 
+                color: "from-lime-600 to-lime-800", 
+                region: "other",
+                pdfPath: "pdf/umk/",
+                courseFiles: [
+                    { name: "Cours MEF Biskra", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Exercices", file: "td_exercices.pdf" }
+                ]
+            },
+            { 
+                name: "UMA", 
+                fullName: "Université de Mostaganem", 
+                city: "Mostaganem", 
+                exams: 16, 
+                courses: 10, 
+                color: "from-amber-600 to-amber-800", 
+                region: "other",
+                pdfPath: "pdf/uma/",
+                courseFiles: [
+                    { name: "Cours MEF Mostaganem", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Série 01", file: "td_serie01.pdf" }
+                ]
+            },
+            { 
+                name: "UBMA", 
+                fullName: "Université Badji Mokhtar", 
+                city: "Annaba", 
+                exams: 21, 
+                courses: 12, 
+                color: "from-rose-600 to-rose-800", 
+                region: "other",
+                pdfPath: "pdf/ubma/",
+                courseFiles: [
+                    { name: "Cours MEF Annaba", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Applications", file: "td_applications.pdf" }
+                ]
+            },
+            { 
+                name: "UMBB", 
+                fullName: "Université M'hamed Bougara", 
+                city: "Boumerdès", 
+                exams: 26, 
+                courses: 15, 
+                color: "from-violet-600 to-violet-800", 
+                region: "algiers",
+                pdfPath: "pdf/umbb/",
+                courseFiles: [
+                    { name: "Cours MEF Boumerdès", file: "cours_mef.pdf" },
+                    { name: "Formulaire", file: "formulaire.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD 01", file: "td01.pdf" },
+                    { name: "TD 02", file: "td02.pdf" }
+                ]
+            },
+            { 
+                name: "USDB", 
+                fullName: "Université Saad Dahleb", 
+                city: "Blida", 
+                exams: 23, 
+                courses: 14, 
+                color: "from-sky-600 to-sky-800", 
+                region: "algiers",
+                pdfPath: "pdf/usdb/",
+                courseFiles: [
+                    { name: "Cours MEF Blida", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Exercices", file: "td_exercices.pdf" }
+                ]
+            },
+            { 
+                name: "UHL", 
+                fullName: "Université Hassiba Ben Bouali", 
+                city: "Chlef", 
+                exams: 17, 
+                courses: 10, 
+                color: "from-slate-600 to-slate-800", 
+                region: "other",
+                pdfPath: "pdf/uhl/",
+                courseFiles: [
+                    { name: "Cours MEF Chlef", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Pratiques", file: "td_pratiques.pdf" }
+                ]
+            },
+            { 
+                name: "UJIK", 
+                fullName: "Université Jijel", 
+                city: "Jijel", 
+                exams: 14, 
+                courses: 8, 
+                color: "from-fuchsia-600 to-fuchsia-800", 
+                region: "other",
+                pdfPath: "pdf/ujik/",
+                courseFiles: [
+                    { name: "Cours MEF Jijel", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Applications", file: "td_applications.pdf" }
+                ]
+            },
+            { 
+                name: "UTM", 
+                fullName: "Université Tissemsilt", 
+                city: "Tissemsilt", 
+                exams: 11, 
+                courses: 7, 
+                color: "from-zinc-600 to-zinc-800", 
+                region: "other",
+                pdfPath: "pdf/utm/",
+                courseFiles: [
+                    { name: "Cours MEF Tissemsilt", file: "cours_mef.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD Exercices", file: "td_exercices.pdf" }
+                ]
+            }
         ];
 
         const booksData = [
-            { title: "Méthode des Éléments Finis - Tome 1", author: "Gouri Dhatt & Gilbert Touzot", uni: "ENSTP", type: "Référence principale", color: "from-enstp-navy to-enstp-blue" },
-            { title: "Finite Element Procedures", author: "K.J. Bathe", uni: "USTHB", type: "Edition MIT", color: "from-blue-600 to-blue-800" },
-            { title: "The Finite Element Method", author: "O.C. Zienkiewicz", uni: "ENP", type: "7th Edition", color: "from-purple-600 to-purple-800" },
-            { title: "Programming the FEM in MATLAB", author: "G.R. Liu", uni: "Polytechnique", type: "Avec codes sources", color: "from-green-600 to-green-800" },
-            { title: "Formulaire MEF Complet", author: "Dr. Ahmed Benyagoub", uni: "ENSTP", type: "Résumé des formules", color: "from-enstp-gold to-yellow-600" },
-            { title: "Introduction to FEM", author: "J.N. Reddy", uni: "UC", type: "McGraw-Hill", color: "from-orange-600 to-orange-800" }
+            { title: "Méthode des Éléments Finis - Tome 1", author: "Gouri Dhatt & Gilbert Touzot", uni: "ENSTP", type: "Référence principale", color: "from-enstp-navy to-enstp-blue", file: "books/dhatt_touzot_tome1.pdf" },
+            { title: "Finite Element Procedures", author: "K.J. Bathe", uni: "USTHB", type: "Edition MIT", color: "from-blue-600 to-blue-800", file: "books/bathe_fem.pdf" },
+            { title: "The Finite Element Method", author: "O.C. Zienkiewicz", uni: "ENP", type: "7th Edition", color: "from-purple-600 to-purple-800", file: "books/zienkiewicz_fem.pdf" },
+            { title: "Programming the FEM in MATLAB", author: "G.R. Liu", uni: "Polytechnique", type: "Avec codes sources", color: "from-green-600 to-green-800", file: "books/liu_matlab.pdf" },
+            { title: "Formulaire MEF Complet", author: "Dr. Ahmed Benyagoub", uni: "ENSTP", type: "Résumé des formules", color: "from-enstp-gold to-yellow-600", file: "books/formulaire_mef.pdf" },
+            { title: "Introduction to FEM", author: "J.N. Reddy", uni: "UC", type: "McGraw-Hill", color: "from-orange-600 to-orange-800", file: "books/reddy_intro.pdf" }
         ];
 
         const videosData = [
@@ -1230,6 +1597,86 @@
                 contentS4.classList.remove('hidden');
                 contentS3.classList.add('hidden');
             }
+        }
+
+        // PDF Functions
+        function openPDF(filePath, title) {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            const downloadLink = document.getElementById('pdfDownloadLink');
+            const modalTitle = document.getElementById('pdfModalTitle');
+            const fileName = document.getElementById('pdfFileName');
+            
+            viewer.src = filePath;
+            downloadLink.href = filePath;
+            downloadLink.download = filePath.split('/').pop();
+            modalTitle.textContent = title;
+            fileName.textContent = filePath;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function closePDFModal() {
+            const modal = document.getElementById('pdfModal');
+            const viewer = document.getElementById('pdfViewer');
+            viewer.src = '';
+            modal.classList.add('hidden');
+        }
+
+        function showUniversityPDFs(uniName) {
+            const uni = universitiesData.find(u => u.name === uniName);
+            if (!uni) return;
+
+            const modal = document.getElementById('universityPDFModal');
+            const title = document.getElementById('uniPDFTitle');
+            const subtitle = document.getElementById('uniPDFSubtitle');
+            const coursesList = document.getElementById('uniCoursesList');
+            const tdList = document.getElementById('uniTDList');
+
+            title.textContent = uni.fullName;
+            subtitle.textContent = `${uni.city} • ${uni.courses} Cours • ${uni.tdFiles.length} TD`;
+
+            // Populate courses
+            coursesList.innerHTML = uni.courseFiles.map(course => `
+                <div class="pdf-item p-4 bg-gray-50 rounded-xl flex items-center justify-between cursor-pointer" onclick="openPDF('${uni.pdfPath}${course.file}', '${course.name}')">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-file-pdf text-red-500 text-xl"></i>
+                        <span class="font-semibold text-gray-700">${course.name}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="text-enstp-blue hover:text-enstp-navy" title="Visualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <a href="${uni.pdfPath}${course.file}" download class="text-enstp-gold hover:text-enstp-navy" title="Télécharger" onclick="event.stopPropagation();">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            // Populate TDs
+            tdList.innerHTML = uni.tdFiles.map(td => `
+                <div class="pdf-item p-4 bg-gray-50 rounded-xl flex items-center justify-between cursor-pointer" onclick="openPDF('${uni.pdfPath}${td.file}', '${td.name}')">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-file-alt text-enstp-blue text-xl"></i>
+                        <span class="font-semibold text-gray-700">${td.name}</span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <button class="text-enstp-blue hover:text-enstp-navy" title="Visualiser">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <a href="${uni.pdfPath}${td.file}" download class="text-enstp-gold hover:text-enstp-navy" title="Télécharger" onclick="event.stopPropagation();">
+                            <i class="fas fa-download"></i>
+                        </a>
+                    </div>
+                </div>
+            `).join('');
+
+            modal.classList.remove('hidden');
+        }
+
+        function closeUniversityPDFModal() {
+            document.getElementById('universityPDFModal').classList.add('hidden');
         }
 
         // Attendance - Editable Table
@@ -1473,12 +1920,12 @@
                             <span class="px-3 py-1 bg-enstp-cream rounded-full text-xs font-semibold text-enstp-navy">${uni.exams} Examens</span>
                         </div>
                         <div class="grid grid-cols-2 gap-3">
-                            <button onclick="showUniversityDetail('${uni.name}')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                                <i class="fas fa-file-alt mr-2"></i>Voir
+                            <button onclick="showUniversityPDFs('${uni.name}')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-file-alt mr-2"></i>Examens PDF
                             </button>
-                            <a href="${uni.website}" target="_blank" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white transition-all flex items-center justify-center">
-                                <i class="fas fa-external-link-alt mr-2"></i>Site
-                            </a>
+                            <button onclick="showUniversityPDFs('${uni.name}')" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white transition-all flex items-center justify-center">
+                                <i class="fas fa-folder-open mr-2"></i>Cours
+                            </button>
                         </div>
                     </div>
                 `;
@@ -1506,11 +1953,11 @@
                         <p class="text-gray-500 text-sm mb-2">${uni.fullName}</p>
                         <p class="text-enstp-gold font-semibold text-sm mb-4">${uni.city}</p>
                         <div class="flex justify-center gap-3 mb-4">
-                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">${uni.courses} Cours</span>
-                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">${Math.floor(uni.courses * 1.5)} TD</span>
+                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">${uni.courses} Cours PDF</span>
+                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">${uni.tdFiles.length} TD PDF</span>
                         </div>
-                        <button onclick="showUniversityCourses('${uni.name}')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                            Accéder aux cours
+                        <button onclick="showUniversityPDFs('${uni.name}')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-folder-open mr-2"></i>Accéder aux PDFs
                         </button>
                     </div>
                 `;
@@ -1555,8 +2002,8 @@
                         <span class="text-xs text-enstp-gold font-semibold">${book.type}</span>
                         <h3 class="font-bold text-lg mb-2 line-clamp-2 text-enstp-navy">${book.title}</h3>
                         <p class="text-gray-600 text-sm mb-4">${book.author}</p>
-                        <button class="w-full py-2 rounded-lg bg-enstp-navy text-white font-semibold hover:bg-opacity-90">
-                            <i class="fas fa-eye mr-2"></i>Consulter
+                        <button onclick="openPDF('${book.file}', '${book.title}')" class="w-full py-2 rounded-lg bg-enstp-navy text-white font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-eye mr-2"></i>Consulter PDF
                         </button>
                     </div>
                 `;
@@ -1664,65 +2111,15 @@
 
         // Utility functions
         function showUniversityDetail(uniName) {
-            const uni = universitiesData.find(u => u.name === uniName);
-            if (!uni) return;
-            
-            const modal = document.getElementById('universityModal');
-            const content = document.getElementById('universityModalContent');
-            
-            content.innerHTML = `
-                <div class="bg-gradient-to-br ${uni.color} p-8 text-white relative overflow-hidden">
-                    <button onclick="closeUniversityModal()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30">
-                        <i class="fas fa-times"></i>
-                    </button>
-                    <div class="text-center">
-                        <div class="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-gray-800 shadow-2xl">
-                            ${uni.name.substring(0, 2)}
-                        </div>
-                        <h2 class="text-3xl font-bold mb-2">${uni.name}</h2>
-                        <p class="text-white/80">${uni.fullName}</p>
-                        <p class="text-enstp-gold font-semibold mt-2">${uni.city}</p>
-                    </div>
-                </div>
-                <div class="p-8">
-                    <div class="grid md:grid-cols-3 gap-6 mb-8">
-                        <div class="text-center p-6 bg-enstp-cream rounded-2xl">
-                            <div class="text-3xl font-bold text-enstp-navy mb-2">${uni.exams}</div>
-                            <div class="text-gray-600 text-sm">Examens</div>
-                        </div>
-                        <div class="text-center p-6 bg-enstp-cream rounded-2xl">
-                            <div class="text-3xl font-bold text-enstp-navy mb-2">${uni.courses}</div>
-                            <div class="text-gray-600 text-sm">Cours</div>
-                        </div>
-                        <div class="text-center p-6 bg-enstp-cream rounded-2xl">
-                            <div class="text-3xl font-bold text-enstp-navy mb-2">${Math.floor(uni.courses * 1.5)}</div>
-                            <div class="text-gray-600 text-sm">TD</div>
-                        </div>
-                    </div>
-                    <div class="space-y-3">
-                        <a href="${uni.website}" target="_blank" class="block w-full py-4 bg-enstp-navy text-white text-center rounded-xl font-semibold hover:bg-opacity-90">
-                            <i class="fas fa-external-link-alt mr-2"></i>Visiter le site officiel
-                        </a>
-                        <button onclick="alert('Téléchargement des examens...')" class="block w-full py-4 bg-enstp-gold text-enstp-navy text-center rounded-xl font-semibold hover:bg-opacity-90">
-                            <i class="fas fa-download mr-2"></i>Télécharger tous les examens
-                        </button>
-                    </div>
-                </div>
-            `;
-            
-            modal.classList.remove('hidden');
+            showUniversityPDFs(uniName);
         }
 
         function showUniversityCourses(uniName) {
-            showUniversityDetail(uniName);
-        }
-
-        function closeUniversityModal() {
-            document.getElementById('universityModal').classList.add('hidden');
+            showUniversityPDFs(uniName);
         }
 
         function showUniversityExams(uniName) {
-            showUniversityDetail(uniName);
+            showUniversityPDFs(uniName);
         }
 
         function updateAttendanceTable() {
