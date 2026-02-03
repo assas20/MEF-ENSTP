@@ -1,0 +1,1743 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ENSTP | FEM Education Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Noto+Naskh+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        arabic: ['Noto Naskh Arabic', 'serif'],
+                    },
+                    colors: {
+                        enstp: {
+                            navy: '#0A1628',
+                            blue: '#1E3A8A',
+                            gold: '#D4AF37',
+                            goldLight: '#F4E4BC',
+                            cream: '#FAF9F6',
+                            gray: '#F5F5F5'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #FAF9F6;
+            color: #0A1628;
+            overflow-x: hidden;
+        }
+        .font-serif { font-family: 'Playfair Display', serif; }
+        .font-arabic { font-family: 'Noto Naskh Arabic', serif; }
+        .gradient-gold { background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 50%, #D4AF37 100%); }
+        .gradient-navy { background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 100%); }
+        .text-gradient-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .glass-premium {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(212, 175, 55, 0.2);
+        }
+        .card-luxury {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .card-luxury:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.25);
+        }
+        .btn-gold {
+            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-gold:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+        .nav-item {
+            position: relative;
+            padding: 0.5rem 0;
+        }
+        .nav-item::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #D4AF37;
+            transition: width 0.3s ease;
+        }
+        .nav-item:hover::after, .nav-item.active::after {
+            width: 100%;
+        }
+        #canvas-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.3;
+        }
+        .editable-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        .editable-table input:focus {
+            outline: none;
+            border-color: #D4AF37;
+            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+        }
+        .editable-table select {
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+            cursor: pointer;
+        }
+        .editable-table select:focus {
+            outline: none;
+            border-color: #D4AF37;
+        }
+        .presence-present { background-color: #dcfce7; color: #166534; }
+        .presence-absent { background-color: #fee2e2; color: #991b1b; }
+        .presence-justified { background-color: #dbeafe; color: #1e40af; }
+        .back-btn {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 40;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .back-btn:hover {
+            transform: translateY(-3px) scale(1.1);
+            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+        }
+        .university-card-new {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .university-card-new:hover {
+            transform: translateY(-5px);
+            border-color: #D4AF37;
+            box-shadow: 0 20px 40px rgba(10, 22, 40, 0.15);
+        }
+        .university-header {
+            height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        .university-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 4px solid white;
+            position: absolute;
+            bottom: -40px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        .school-header {
+            background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 50%, #0A1628 100%);
+            position: relative;
+            overflow: hidden;
+        }
+        .school-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .logo-container {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+            border: 4px solid #D4AF37;
+        }
+        .trilingual-name {
+            text-align: center;
+            line-height: 1.6;
+        }
+        .trilingual-name .fr { font-family: 'Playfair Display', serif; }
+        .trilingual-name .ar { font-family: 'Noto Naskh Arabic', serif; font-size: 1.1em; }
+        .trilingual-name .en { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div id="canvas-container"></div>
+
+    <!-- Back Button -->
+    <button class="back-btn" onclick="showSection('home')" title="Retour à l'accueil">
+        <i class="fas fa-home"></i>
+    </button>
+
+    <!-- Navigation -->
+    <nav class="fixed w-full z-50 glass-premium shadow-sm transition-all duration-300" id="navbar">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-24">
+                <!-- Logo with School Name -->
+                <div class="flex items-center space-x-4 cursor-pointer" onclick="showSection('home')">
+                    <div class="logo-container">
+                        <div class="text-center">
+                            <div class="font-serif font-bold text-2xl text-enstp-navy">ENSTP</div>
+                            <div class="text-xs text-enstp-gold font-bold">FJ</div>
+                        </div>
+                    </div>
+                    <div class="hidden lg:block trilingual-name">
+                        <div class="fr text-white font-serif text-lg font-bold drop-shadow-lg">École Nationale Supérieure</div>
+                        <div class="ar text-enstp-gold font-arabic text-base font-bold drop-shadow-lg">المدرسة الوطنية العليا للأشغال العمومية</div>
+                        <div class="en text-gray-300 text-sm tracking-wider drop-shadow-lg">Higher National School of Public Works</div>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden xl:flex items-center space-x-6">
+                    <a href="#" onclick="showSection('home')" class="nav-item text-sm font-semibold text-enstp-navy hover:text-enstp-gold transition-colors">Accueil</a>
+                    <a href="#" onclick="showSection('courses')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Cours 📑</a>
+                    <a href="#" onclick="showSection('td')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">TD</a>
+                    <a href="#" onclick="showSection('exams')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Examens 📝</a>
+                    <a href="#" onclick="showSection('homework')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Devoirs</a>
+                    <a href="#" onclick="showSection('grades')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Notes 📊</a>
+                    <a href="#" onclick="showSection('attendance')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Présence</a>
+                    <a href="#" onclick="showSection('program')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Programme 📃</a>
+                    <a href="#" onclick="showSection('library')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Livre 📚</a>
+                    <a href="#" onclick="showSection('videos')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Vidéos 📹</a>
+                    <a href="#" onclick="showSection('ai-lab')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors flex items-center">
+                        <i class="fas fa-robot mr-2 text-enstp-gold"></i>AI
+                    </a>
+                    <a href="#" onclick="showSection('contact')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Contact 📞</a>
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-2 bg-gray-100 rounded-full p-1">
+                        <button onclick="switchLanguage('fr')" class="lang-btn px-3 py-1.5 rounded-full text-xs font-semibold transition-all bg-white shadow-sm text-enstp-navy" data-lang="fr">FR</button>
+                        <button onclick="switchLanguage('en')" class="lang-btn px-3 py-1.5 rounded-full text-xs font-semibold transition-all text-gray-500" data-lang="en">EN</button>
+                        <button onclick="switchLanguage('ar')" class="lang-btn px-3 py-1.5 rounded-full text-xs font-semibold transition-all text-gray-500" data-lang="ar">AR</button>
+                    </div>
+                    <button class="w-10 h-10 rounded-full bg-enstp-navy text-white flex items-center justify-center hover:bg-enstp-gold transition-colors">
+                        <i class="fas fa-user"></i>
+                    </button>
+                    <button class="xl:hidden p-2 text-enstp-navy" onclick="toggleMobileMenu()">
+                        <i class="fas fa-bars text-xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Mobile Menu -->
+    <div id="mobileMenu" class="fixed inset-0 z-40 bg-white transform translate-x-full transition-transform duration-300 xl:hidden pt-24 overflow-y-auto">
+        <div class="p-6 space-y-3">
+            <a href="#" onclick="showSection('home'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Accueil</a>
+            <a href="#" onclick="showSection('courses'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Cours 📑</a>
+            <a href="#" onclick="showSection('td'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">TD</a>
+            <a href="#" onclick="showSection('exams'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Examens 📝</a>
+            <a href="#" onclick="showSection('homework'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Devoirs</a>
+            <a href="#" onclick="showSection('grades'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Notes 📊</a>
+            <a href="#" onclick="showSection('attendance'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Présence</a>
+            <a href="#" onclick="showSection('program'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Programme 📃</a>
+            <a href="#" onclick="showSection('library'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Livre 📚</a>
+            <a href="#" onclick="showSection('videos'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Vidéos 📹</a>
+            <a href="#" onclick="showSection('ai-lab'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100 text-enstp-gold">AI Lab</a>
+            <a href="#" onclick="showSection('contact'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Contact 📞</a>
+        </div>
+    </div>
+
+    <main class="pt-24">
+        
+        <!-- HOME SECTION -->
+        <section id="home-section" class="school-header min-h-screen flex items-center">
+            <div class="absolute inset-0 bg-black/40"></div>
+            
+            <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+                <div class="text-center max-w-4xl mx-auto">
+                    <div class="mb-8">
+                        <div class="inline-block p-6 bg-white/10 backdrop-blur-sm rounded-3xl border border-white/20 mb-6">
+                            <div class="w-32 h-32 mx-auto bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-enstp-gold mb-4">
+                                <div class="text-center">
+                                    <div class="font-serif font-bold text-4xl text-enstp-navy">ENSTP</div>
+                                    <div class="text-xs text-enstp-gold font-bold tracking-widest">FRANCIS JANSON</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="trilingual-name mb-8 text-white">
+                        <div class="fr font-serif text-3xl md:text-5xl font-bold mb-2 drop-shadow-2xl">École Nationale Supérieure<br>des Travaux Publics</div>
+                        <div class="ar font-arabic text-2xl md:text-4xl font-bold text-enstp-gold my-4 drop-shadow-2xl">المدرسة الوطنية العليا<br>للأشغال العمومية</div>
+                        <div class="en text-xl md:text-2xl font-light tracking-wider drop-shadow-2xl">Higher National School of Public Works<br>Francis Janson</div>
+                    </div>
+                    
+                    <div class="inline-flex items-center px-6 py-3 rounded-full bg-white/10 border border-enstp-gold/50 text-enstp-gold text-sm font-medium mb-8 backdrop-blur-sm">
+                        <span class="w-2 h-2 rounded-full bg-enstp-gold mr-3 animate-pulse"></span>
+                        2ème Année DIB & DMS • Méthode des Éléments Finis • 2025/2026
+                    </div>
+
+                    <p class="text-xl text-gray-200 mb-10 max-w-2xl mx-auto leading-relaxed">
+                        Plateforme éducative nationale regroupant les ressources de plus de 20 universités algériennes 
+                        avec système de gestion des présences et notes intelligent
+                    </p>
+
+                    <div class="flex flex-wrap justify-center gap-4 mb-12">
+                        <button onclick="showSection('td')" class="btn-gold px-8 py-4 rounded-full font-semibold text-lg shadow-2xl flex items-center">
+                            <i class="fas fa-book-open mr-3"></i>Commencer
+                        </button>
+                        <button onclick="showSection('attendance')" class="px-8 py-4 rounded-full font-semibold text-lg border-2 border-white/50 text-white hover:bg-white/10 backdrop-blur-sm transition-all">
+                            <i class="fas fa-clipboard-check mr-3"></i>Gestion Présence
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-3xl mx-auto">
+                        <div class="text-center p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                            <div class="text-4xl font-bold text-enstp-gold mb-2">20+</div>
+                            <div class="text-sm text-gray-300">Universités</div>
+                        </div>
+                        <div class="text-center p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                            <div class="text-4xl font-bold text-white mb-2">500+</div>
+                            <div class="text-sm text-gray-300">Ressources</div>
+                        </div>
+                        <div class="text-center p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                            <div class="text-4xl font-bold text-enstp-gold mb-2">AI</div>
+                            <div class="text-sm text-gray-300">Assistant 24/7</div>
+                        </div>
+                        <div class="text-center p-6 bg-white/5 backdrop-blur-sm rounded-2xl border border-white/10">
+                            <div class="text-4xl font-bold text-white mb-2">100%</div>
+                            <div class="text-sm text-gray-300">Gratuit</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- QUICK ACCESS -->
+        <section class="py-8 bg-white border-b border-gray-100">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid grid-cols-4 md:grid-cols-8 gap-3">
+                    <button onclick="showSection('courses')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-book text-xl mb-1 text-enstp-blue group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Cours 📑</p>
+                    </button>
+                    <button onclick="showSection('td')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-tasks text-xl mb-1 text-enstp-gold group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">TD</p>
+                    </button>
+                    <button onclick="showSection('exams')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-file-alt text-xl mb-1 text-purple-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Examens 📝</p>
+                    </button>
+                    <button onclick="showSection('homework')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-pencil-alt text-xl mb-1 text-orange-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Devoirs</p>
+                    </button>
+                    <button onclick="showSection('grades')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-chart-line text-xl mb-1 text-green-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Notes 📊</p>
+                    </button>
+                    <button onclick="showSection('attendance')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-clipboard-check text-xl mb-1 text-pink-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Présence</p>
+                    </button>
+                    <button onclick="showSection('videos')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-video text-xl mb-1 text-red-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Vidéos 📹</p>
+                    </button>
+                    <button onclick="showSection('library')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-book-open text-xl mb-1 text-indigo-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Livre 📚</p>
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ATTENDANCE SECTION - EDITABLE -->
+        <section id="attendance-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-8">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Liste de Présence</h2>
+                    <p class="text-gray-600">Gérez les présences manuellement. Les points sont calculés automatiquement.</p>
+                </div>
+
+                <!-- Session Info -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Date</label>
+                            <input type="date" id="attDate" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Spécialité</label>
+                            <select id="attSpecialty" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateAttendanceTable()">
+                                <option value="dib">DIB</option>
+                                <option value="dms">DMS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Groupe</label>
+                            <select id="attGroup" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateAttendanceTable()">
+                                <option value="01">Groupe 01</option>
+                                <option value="02">Groupe 02</option>
+                                <option value="03">Groupe 03</option>
+                                <option value="04">Groupe 04</option>
+                                <option value="05">Groupe 05</option>
+                                <option value="06">Groupe 06</option>
+                                <option value="07">Groupe 07</option>
+                                <option value="08">Groupe 08</option>
+                                <option value="09">Groupe 09</option>
+                                <option value="10">Groupe 10</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Séance</label>
+                            <select id="attSession" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                                <option>TD 01 - Séance 1</option>
+                                <option>TD 01 - Séance 2</option>
+                                <option>TD 02 - Séance 1</option>
+                                <option>TD 02 - Séance 2</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Attendance Table -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 mb-6">
+                    <div class="p-4 bg-enstp-navy text-white flex justify-between items-center">
+                        <h3 class="font-bold text-lg" id="attTableTitle">DIB - Groupe 01</h3>
+                        <div class="flex space-x-3">
+                            <button onclick="addStudentRow()" class="px-4 py-2 bg-enstp-gold text-enstp-navy rounded-lg font-semibold text-sm hover:bg-opacity-90">
+                                <i class="fas fa-plus mr-2"></i>Ajouter étudiant
+                            </button>
+                            <button onclick="saveAttendance()" class="px-4 py-2 bg-white text-enstp-navy rounded-lg font-semibold text-sm hover:bg-gray-100">
+                                <i class="fas fa-save mr-2"></i>Enregistrer
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="editable-table w-full text-sm" id="attendanceTable">
+                            <thead>
+                                <tr class="bg-enstp-cream">
+                                    <th class="p-3 text-left">N°</th>
+                                    <th class="p-3 text-left">Matricule</th>
+                                    <th class="p-3 text-left">Nom</th>
+                                    <th class="p-3 text-left">Prénom</th>
+                                    <th class="p-3 text-center">Séance 1</th>
+                                    <th class="p-3 text-center">Séance 2</th>
+                                    <th class="p-3 text-center">Séance 3</th>
+                                    <th class="p-3 text-center">Séance 4</th>
+                                    <th class="p-3 text-center">Total Abs</th>
+                                    <th class="p-3 text-center">Points /2</th>
+                                    <th class="p-3 text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="attendanceTableBody">
+                                <!-- Rows added dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Legend -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                    <h4 class="font-bold mb-4">Légende</h4>
+                    <div class="flex flex-wrap gap-4">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-4 h-4 rounded bg-green-100 border border-green-500"></span>
+                            <span class="text-sm">Présent (P)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-4 h-4 rounded bg-red-100 border border-red-500"></span>
+                            <span class="text-sm">Absent (A)</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-4 h-4 rounded bg-blue-100 border border-blue-500"></span>
+                            <span class="text-sm">Justifié (J)</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 p-4 bg-enstp-cream rounded-xl">
+                        <h5 class="font-semibold mb-2">Barème de points (sur 2):</h5>
+                        <p class="text-sm text-gray-700">0 absence = 2 pts | 1 absence = 1.5 pts | 2 absences = 1 pt | 3 absences = 0.5 pt | 4+ absences = 0 pt</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- GRADES SECTION - EDITABLE -->
+        <section id="grades-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-8">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Gestion des Notes 📊</h2>
+                    <p class="text-gray-600">Saisissez les notes manuellement. La moyenne est calculée automatiquement.</p>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
+                    <div class="grid md:grid-cols-4 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Spécialité</label>
+                            <select id="gradeSpecialty" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateGradesTable()">
+                                <option value="dib">DIB</option>
+                                <option value="dms">DMS</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Groupe</label>
+                            <select id="gradeGroup" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateGradesTable()">
+                                <option value="01">Groupe 01</option>
+                                <option value="02">Groupe 02</option>
+                                <option value="03">Groupe 03</option>
+                                <option value="04">Groupe 04</option>
+                                <option value="05">Groupe 05</option>
+                                <option value="06">Groupe 06</option>
+                                <option value="07">Groupe 07</option>
+                                <option value="08">Groupe 08</option>
+                                <option value="09">Groupe 09</option>
+                                <option value="10">Groupe 10</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Semestre</label>
+                            <select id="gradeSemester" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                                <option value="s3">Semestre 03</option>
+                                <option value="s4">Semestre 04</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end">
+                            <button onclick="addGradeRow()" class="w-full px-4 py-2 bg-enstp-gold text-white rounded-xl font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-plus mr-2"></i>Ajouter étudiant
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grading Info -->
+                <div class="bg-enstp-navy text-white rounded-2xl p-6 mb-6">
+                    <h3 class="font-bold text-lg mb-4">Barème de calcul - Contrôle Continu</h3>
+                    <div class="grid md:grid-cols-5 gap-4 text-sm">
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <div class="text-enstp-gold font-bold text-xl">3 pts</div>
+                            <div>Cours</div>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <div class="text-enstp-gold font-bold text-xl">10 pts</div>
+                            <div>Interrogation</div>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <div class="text-enstp-gold font-bold text-xl">5 pts</div>
+                            <div>Participation</div>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <div class="text-enstp-gold font-bold text-xl">2 pts</div>
+                            <div>Présence</div>
+                        </div>
+                        <div class="bg-white/10 rounded-lg p-4 text-center">
+                            <div class="text-enstp-gold font-bold text-xl">20 pts</div>
+                            <div>Examen</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Grades Table -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 mb-6">
+                    <div class="p-4 bg-enstp-cream border-b border-gray-200 flex justify-between items-center">
+                        <h3 class="font-bold text-lg text-enstp-navy" id="gradesTableTitle">DIB - Groupe 01 - Semestre 03</h3>
+                        <div class="flex space-x-3">
+                            <button onclick="importFromAttendance()" class="px-4 py-2 bg-enstp-blue text-white rounded-lg font-semibold text-sm hover:bg-opacity-90">
+                                <i class="fas fa-import mr-2"></i>Importer Présences
+                            </button>
+                            <button onclick="saveGrades()" class="px-4 py-2 bg-enstp-navy text-white rounded-lg font-semibold text-sm hover:bg-opacity-90">
+                                <i class="fas fa-save mr-2"></i>Enregistrer
+                            </button>
+                            <button onclick="exportToExcel()" class="px-4 py-2 border-2 border-enstp-navy text-enstp-navy rounded-lg font-semibold text-sm hover:bg-enstp-navy hover:text-white">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="editable-table w-full text-sm" id="gradesTable">
+                            <thead>
+                                <tr class="bg-enstp-navy text-white">
+                                    <th class="p-3">N°</th>
+                                    <th class="p-3">Matricule</th>
+                                    <th class="p-3">Nom</th>
+                                    <th class="p-3">Prénom</th>
+                                    <th class="p-3">Présence /2</th>
+                                    <th class="p-3">Participation /5</th>
+                                    <th class="p-3">Interro /10</th>
+                                    <th class="p-3">Cours /3</th>
+                                    <th class="p-3">CC /20</th>
+                                    <th class="p-3">Examen /20</th>
+                                    <th class="p-3">Moyenne</th>
+                                    <th class="p-3">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="gradesTableBody">
+                                <!-- Rows added dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Statistics -->
+                <div class="grid md:grid-cols-4 gap-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 text-center border border-gray-100">
+                        <div class="text-3xl font-bold text-enstp-gold mb-2" id="statAverage">--</div>
+                        <div class="text-gray-600 text-sm">Moyenne générale</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 text-center border border-gray-100">
+                        <div class="text-3xl font-bold text-enstp-blue mb-2" id="statHighest">--</div>
+                        <div class="text-gray-600 text-sm">Meilleure note</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 text-center border border-gray-100">
+                        <div class="text-3xl font-bold text-enstp-navy mb-2" id="statLowest">--</div>
+                        <div class="text-gray-600 text-sm">Note minimale</div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 text-center border border-gray-100">
+                        <div class="text-3xl font-bold text-green-600 mb-2" id="statSuccess">--</div>
+                        <div class="text-gray-600 text-sm">Taux de réussite</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- EXAMS SECTION - NEW DESIGN -->
+        <section id="exams-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Examens et Contrôle Continu 📝</h2>
+                    <p class="text-gray-600">Base de données nationale des examens</p>
+                </div>
+
+                <!-- ENSTP Featured -->
+                <div class="mb-12 relative overflow-hidden rounded-3xl bg-gradient-to-r from-enstp-navy via-enstp-blue to-enstp-navy p-8 text-white shadow-2xl">
+                    <div class="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -mr-20 -mt-20"></div>
+                    <div class="absolute bottom-0 left-0 w-48 h-48 bg-enstp-gold/20 rounded-full -ml-10 -mb-10"></div>
+                    
+                    <div class="relative z-10 flex flex-col md:flex-row items-center justify-between">
+                        <div class="flex items-center space-x-6 mb-6 md:mb-0">
+                            <div class="w-24 h-24 bg-white rounded-full flex items-center justify-center shadow-2xl border-4 border-enstp-gold">
+                                <div class="text-center">
+                                    <div class="font-serif font-bold text-3xl text-enstp-navy">ENSTP</div>
+                                    <div class="text-xs text-enstp-gold font-bold">FJ</div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="trilingual-name text-white mb-2">
+                                    <div class="fr font-serif text-2xl font-bold">École Nationale Supérieure des Travaux Publics</div>
+                                    <div class="ar font-arabic text-lg text-enstp-gold my-1">المدرسة الوطنية العليا للأشغال العمومية</div>
+                                    <div class="en text-sm text-gray-300">Higher National School of Public Works</div>
+                                </div>
+                                <p class="text-enstp-gold font-semibold">Kouba, Alger • Francis Janson</p>
+                            </div>
+                        </div>
+                        <div class="text-center md:text-right">
+                            <div class="text-5xl font-bold text-enstp-gold mb-2">45+</div>
+                            <div class="text-gray-300 mb-4">Examens disponibles</div>
+                            <div class="flex space-x-3">
+                                <button onclick="showUniversityExams('ENSTP')" class="px-6 py-3 bg-enstp-gold text-enstp-navy rounded-xl font-bold hover:bg-opacity-90 transition-all">
+                                    <i class="fas fa-file-alt mr-2"></i>Voir les examens
+                                </button>
+                                <a href="https://www.enstp.edu.dz" target="_blank" class="px-6 py-3 border-2 border-white/30 rounded-xl font-semibold hover:bg-white/10 transition-all">
+                                    <i class="fas fa-external-link-alt mr-2"></i>Site web
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Other Universities Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="examsUniversitiesGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- COURSES SECTION - NEW DESIGN -->
+        <section id="courses-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Cours 📑</h2>
+                    <p class="text-gray-600">Cours et TD des universités algériennes</p>
+                </div>
+
+                <!-- Filter -->
+                <div class="flex flex-wrap justify-center gap-3 mb-8">
+                    <button onclick="filterUniversities('all')" class="filter-btn active px-6 py-2 rounded-full border-2 border-enstp-navy text-sm font-semibold transition-all bg-enstp-navy text-white">Toutes</button>
+                    <button onclick="filterUniversities('algiers')" class="filter-btn px-6 py-2 rounded-full border-2 border-enstp-navy text-enstp-navy text-sm font-semibold transition-all">Alger</button>
+                    <button onclick="filterUniversities('constantine')" class="filter-btn px-6 py-2 rounded-full border-2 border-enstp-navy text-enstp-navy text-sm font-semibold transition-all">Constantine</button>
+                    <button onclick="filterUniversities('oran')" class="filter-btn px-6 py-2 rounded-full border-2 border-enstp-navy text-enstp-navy text-sm font-semibold transition-all">Oran</button>
+                    <button onclick="filterUniversities('other')" class="filter-btn px-6 py-2 rounded-full border-2 border-enstp-navy text-enstp-navy text-sm font-semibold transition-all">Autres</button>
+                </div>
+
+                <!-- Universities Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="coursesUniversitiesGrid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- LIBRARY SECTION -->
+        <section id="library-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Livre 📚 & Ressources</h2>
+                    <p class="text-gray-600">Bibliothèque numérique des universités algériennes</p>
+                </div>
+
+                <!-- University Filter -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+                    <h3 class="font-bold text-lg mb-4">Sélectionner une université</h3>
+                    <div class="flex flex-wrap gap-3" id="libraryUniversityFilter">
+                        <button onclick="filterBooks('all')" class="px-4 py-2 rounded-full bg-enstp-navy text-white text-sm font-semibold">Toutes</button>
+                        <button onclick="filterBooks('ENSTP')" class="px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-enstp-cream">ENSTP</button>
+                        <button onclick="filterBooks('USTHB')" class="px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-enstp-cream">USTHB</button>
+                        <button onclick="filterBooks('Polytechnique')" class="px-4 py-2 rounded-full bg-gray-100 text-gray-700 text-sm font-semibold hover:bg-enstp-cream">Polytechnique</button>
+                    </div>
+                </div>
+
+                <!-- Books Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6" id="booksGrid">
+                    <!-- Books populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- VIDEOS SECTION -->
+        <section id="videos-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Vidéos YouTube 📹</h2>
+                    <p class="text-gray-600">Cours et tutoriels sur la méthode des éléments finis</p>
+                </div>
+
+                <!-- Search -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
+                    <div class="flex flex-col md:flex-row gap-4">
+                        <div class="flex-1 relative">
+                            <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
+                            <input type="text" placeholder="Rechercher une vidéo..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                        </div>
+                        <select class="px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                            <option>Toutes les catégories</option>
+                            <option>Introduction MEF</option>
+                            <option>Éléments 1D</option>
+                            <option>Éléments 2D</option>
+                            <option>Applications pratiques</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Videos Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="videosGrid">
+                    <!-- Videos populated by JavaScript -->
+                </div>
+            </div>
+        </section>
+
+        <!-- TD SECTION -->
+        <section id="td-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+                    <div>
+                        <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-2">Travaux Dirigés</h2>
+                        <p class="text-gray-600">Séries complètes avec solutions détaillées</p>
+                    </div>
+                    
+                    <div class="mt-6 md:mt-0 bg-white rounded-full p-1 shadow-lg border border-gray-200">
+                        <button onclick="switchSemester('s3')" id="btn-s3" class="px-8 py-3 rounded-full font-semibold transition-all bg-enstp-navy text-white shadow-md">Semestre 03</button>
+                        <button onclick="switchSemester('s4')" id="btn-s4" class="px-8 py-3 rounded-full font-semibold transition-all text-gray-600 hover:text-enstp-navy">Semestre 04</button>
+                    </div>
+                </div>
+
+                <div id="semester3-content" class="space-y-6">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-enstp-navy text-white flex items-center justify-center font-bold text-xl">01</div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Complété</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Éléments Barres et Ressorts</h3>
+                            <p class="text-gray-600 text-sm mb-4">Introduction aux éléments finis unidimensionnels</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold"><i class="fas fa-file-pdf mr-2"></i>PDF</button>
+                                <button class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white"><i class="fas fa-lightbulb mr-2"></i>Solution</button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-enstp-blue text-white flex items-center justify-center font-bold text-xl">02</div>
+                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">En cours</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Barres en Treillis</h3>
+                            <p class="text-gray-600 text-sm mb-4">Structures réticulées planes et spatiales</p>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold"><i class="fas fa-file-pdf mr-2"></i>PDF</button>
+                                <button class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white"><i class="fas fa-lightbulb mr-2"></i>Solution</button>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all opacity-60">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-12 h-12 rounded-xl bg-gray-400 text-white flex items-center justify-center font-bold text-xl">03</div>
+                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">Verrouillé</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Éléments Poutres</h3>
+                            <p class="text-gray-600 text-sm mb-4">Flexion et moment fléchissant</p>
+                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed"><i class="fas fa-lock mr-2"></i>Complétez TD 02</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="semester4-content" class="hidden space-y-6">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
+                            <div class="w-12 h-12 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-xl mb-4">01</div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Structures 2D</h3>
+                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
+                            <div class="w-12 h-12 rounded-xl bg-pink-600 text-white flex items-center justify-center font-bold text-xl mb-4">02</div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Fonctions de Formes</h3>
+                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
+                        </div>
+                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
+                            <div class="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-bold text-xl mb-4">03</div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Isoparamétrique</h3>
+                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOMEWORK SECTION -->
+        <section id="homework-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-8">Devoirs Maison</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                        <div class="flex items-center justify-between mb-4">
+                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">À rendre: 15/02/2025</span>
+                            <span class="text-2xl font-bold text-enstp-gold">DM 01</span>
+                        </div>
+                        <h3 class="font-bold text-lg mb-2">Analyse d'un portique simple</h3>
+                        <p class="text-gray-600 text-sm mb-4">Application de la MEF sur une structure 2D à 3 éléments barres</p>
+                        <div class="flex gap-3">
+                            <button class="flex-1 py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold"><i class="fas fa-download mr-2"></i>Sujet</button>
+                            <button class="flex-1 py-2 rounded-lg border-2 border-enstp-gold text-enstp-gold text-sm font-semibold hover:bg-enstp-gold hover:text-white"><i class="fas fa-upload mr-2"></i>Rendre</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROGRAM SECTION -->
+        <section id="program-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-8 text-center">Programme Pédagogique 📃</h2>
+                <div class="space-y-8">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="font-bold text-2xl text-enstp-navy">Semestre 03</h3>
+                            <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-bold">En cours</span>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="flex items-start space-x-4 p-6 bg-enstp-cream rounded-xl border-l-4 border-enstp-gold">
+                                <div class="w-10 h-10 rounded-full bg-enstp-navy text-white flex items-center justify-center font-bold">1</div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-enstp-navy">Introduction à la Méthode des Éléments Finis</h4>
+                                    <p class="text-gray-600 mt-2">Historique, classification des problèmes, étapes de la MEF</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 p-6 bg-enstp-cream rounded-xl border-l-4 border-enstp-blue">
+                                <div class="w-10 h-10 rounded-full bg-enstp-blue text-white flex items-center justify-center font-bold">2</div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-enstp-navy">Éléments Finis Unidimensionnels</h4>
+                                    <p class="text-gray-600 mt-2">Éléments barres, ressorts et poutres</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4 p-6 bg-enstp-cream rounded-xl border-l-4 border-purple-600">
+                                <div class="w-10 h-10 rounded-full bg-purple-600 text-white flex items-center justify-center font-bold">3</div>
+                                <div>
+                                    <h4 class="font-bold text-lg text-enstp-navy">Applications aux Structures Réticulées</h4>
+                                    <p class="text-gray-600 mt-2">Portiques, treillis plans et spatiaux</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- AI LAB SECTION -->
+        <section id="ai-lab-section" class="hidden py-16 bg-enstp-navy text-white">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <div class="inline-flex items-center px-4 py-2 rounded-full bg-white/10 border border-enstp-gold/30 text-enstp-gold text-sm mb-6">
+                        <i class="fas fa-sparkles mr-2"></i> Powered by AI
+                    </div>
+                    <h2 class="font-serif text-5xl font-bold mb-6">AI Laboratory</h2>
+                    <p class="text-xl text-gray-300">Assistant IA pour la méthode des éléments finis</p>
+                </div>
+                <div class="grid lg:grid-cols-2 gap-12">
+                    <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+                        <div class="p-6 border-b border-white/10 flex items-center justify-between">
+                            <div class="flex items-center space-x-3">
+                                <div class="w-10 h-10 rounded-full bg-enstp-gold flex items-center justify-center">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold">FEM Assistant</h4>
+                                    <p class="text-xs text-green-400">En ligne</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="h-96 overflow-y-auto p-6 space-y-4" id="aiChatBox">
+                            <div class="flex items-start space-x-3">
+                                <div class="w-8 h-8 rounded-full bg-enstp-gold flex-shrink-0 flex items-center justify-center text-xs">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div class="bg-white/10 rounded-2xl rounded-tl-none p-4 max-w-[80%]">
+                                    <p class="text-sm">Bonjour ! Je suis votre assistant MEF. Comment puis-je vous aider ?</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-4 border-t border-white/10">
+                            <div class="flex space-x-3">
+                                <input type="text" id="aiInput" placeholder="Posez votre question..." class="flex-1 bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white placeholder-gray-400 focus:outline-none focus:border-enstp-gold" onkeypress="handleAIInput(event)">
+                                <button onclick="sendAIMessage()" class="w-12 h-12 rounded-xl bg-enstp-gold text-white flex items-center justify-center hover:bg-opacity-90">
+                                    <i class="fas fa-paper-plane"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-6">
+                        <div class="bg-white/5 rounded-2xl p-6 border border-white/10">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-enstp-gold/20 flex items-center justify-center text-enstp-gold text-xl">
+                                    <i class="fas fa-cube"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-lg">Simulation 3D</h4>
+                                    <p class="text-gray-400 text-sm">Visualisation temps réel</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- CONTACT SECTION -->
+        <section id="contact-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-8 text-center">Contact 📞</h2>
+                <div class="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
+                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <h3 class="font-bold text-xl mb-6">Informations</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-enstp-gold/10 flex items-center justify-center text-enstp-gold">
+                                    <i class="fas fa-university text-xl"></i>
+                                </div>
+                                <div class="trilingual-name">
+                                    <div class="fr font-serif font-bold text-enstp-navy">École Nationale Supérieure des Travaux Publics</div>
+                                    <div class="ar font-arabic text-enstp-gold font-semibold my-1">المدرسة الوطنية العليا للأشغال العمومية</div>
+                                    <div class="en text-gray-500 text-sm">Higher National School of Public Works</div>
+                                    <p class="text-gray-600 text-sm mt-2">1, Rue Sidi Garidi, Kouba, Algiers</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-enstp-blue/10 flex items-center justify-center text-enstp-blue">
+                                    <i class="fas fa-chalkboard-teacher text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-enstp-navy">Dr. Assas Taqiyeddine</h4>
+                                    <p class="text-gray-500 text-sm">Responsable des TD</p>
+                                    <p class="text-gray-500 text-sm">t.assas@enstp.edu.dz</p>
+                                </div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
+                                    <i class="fas fa-user-tie text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-semibold text-enstp-navy">Mme Mehiaoui Hadjebar</h4>
+                                    <p class="text-gray-500 text-sm">Responsable du Cours</p>
+                                    <p class="text-gray-500 text-sm">h.mehiaoui@enstp.edu.dz</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                        <h3 class="font-bold text-xl mb-6">Envoyer un message</h3>
+                        <form class="space-y-4" onsubmit="event.preventDefault(); alert('Message envoyé !');">
+                            <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Nom complet">
+                            <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Email">
+                            <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Message"></textarea>
+                            <button type="submit" class="w-full py-3 rounded-xl bg-enstp-navy text-white font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-paper-plane mr-2"></i>Envoyer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="bg-enstp-navy text-white py-16">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="grid md:grid-cols-4 gap-12 mb-12">
+                    <div class="col-span-2">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center border-4 border-enstp-gold">
+                                <div class="text-center">
+                                    <div class="font-serif font-bold text-xl text-enstp-navy">ENSTP</div>
+                                    <div class="text-xs text-enstp-gold font-bold">FJ</div>
+                                </div>
+                            </div>
+                            <div class="trilingual-name text-white">
+                                <div class="fr font-serif text-lg font-bold">École Nationale Supérieure des Travaux Publics</div>
+                                <div class="ar font-arabic text-base text-enstp-gold my-1">المدرسة الوطنية العليا للأشغال العمومية</div>
+                                <div class="en text-sm text-gray-400">Higher National School of Public Works</div>
+                            </div>
+                        </div>
+                        <p class="text-gray-400 mb-6 max-w-md">
+                            Plateforme éducative nationale pour la Méthode des Éléments Finis.
+                            Francis Janson - Kouba, Alger.
+                        </p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-6 text-enstp-gold">Navigation</h4>
+                        <ul class="space-y-3 text-gray-400">
+                            <li><a href="#" onclick="showSection('home')" class="hover:text-white transition-colors">Accueil</a></li>
+                            <li><a href="#" onclick="showSection('courses')" class="hover:text-white transition-colors">Cours</a></li>
+                            <li><a href="#" onclick="showSection('exams')" class="hover:text-white transition-colors">Examens</a></li>
+                            <li><a href="#" onclick="showSection('ai-lab')" class="hover:text-white transition-colors">AI Lab</a></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold mb-6 text-enstp-gold">Contact</h4>
+                        <ul class="space-y-3 text-gray-400">
+                            <li class="flex items-start space-x-3">
+                                <i class="fas fa-map-marker-alt mt-1 text-enstp-gold"></i>
+                                <span>1, Rue Sidi Garidi<br>Kouba, Algiers</span>
+                            </li>
+                            <li class="flex items-center space-x-3">
+                                <i class="fas fa-envelope text-enstp-gold"></i>
+                                <span>contact@enstp.edu.dz</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="border-t border-white/10 pt-8 text-center text-gray-400 text-sm">
+                    <p>&copy; 2025 ENSTP Algeria - Francis Janson. Tous droits réservés.</p>
+                </div>
+            </div>
+        </footer>
+    </main>
+
+    <!-- MODALS -->
+    <div id="universityModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUniversityModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl">
+                <div id="universityModalContent"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data
+        const universitiesData = [
+            { name: "USTHB", fullName: "Université des Sciences et Technologie Houari Boumediene", city: "Alger", exams: 32, courses: 15, website: "https://www.usthb.dz", color: "from-blue-600 to-blue-800", region: "algiers" },
+            { name: "ENA", fullName: "École Nationale d'Administration", city: "Alger", exams: 18, courses: 8, website: "https://www.ena.dz", color: "from-green-600 to-green-800", region: "algiers" },
+            { name: "ENP", fullName: "École Nationale Polytechnique", city: "Alger", exams: 28, courses: 20, website: "https://www.enp.edu.dz", color: "from-purple-600 to-purple-800", region: "algiers" },
+            { name: "ENAU", fullName: "École Nationale d'Architecture et d'Urbanisme", city: "Alger", exams: 15, courses: 12, website: "https://www.enau.dz", color: "from-teal-600 to-teal-800", region: "algiers" },
+            { name: "UMMTO", fullName: "Université Mouloud Mammeri", city: "Tizi Ouzou", exams: 22, courses: 10, website: "https://www.ummto.dz", color: "from-red-600 to-red-800", region: "algiers" },
+            { name: "UC", fullName: "Université Constantine 1 - Frères Mentouri", city: "Constantine", exams: 35, courses: 18, website: "https://www.uc Constantine.dz", color: "from-orange-600 to-orange-800", region: "constantine" },
+            { name: "UMC", fullName: "Université Mentouri Constantine", city: "Constantine", exams: 30, courses: 16, website: "https://www.umc.edu.dz", color: "from-yellow-600 to-yellow-800", region: "constantine" },
+            { name: "USTO", fullName: "Université des Sciences et de la Technologie", city: "Oran", exams: 25, courses: 14, website: "https://www.usto.dz", color: "from-indigo-600 to-indigo-800", region: "oran" },
+            { name: "UoB", fullName: "Université d'Oran 1", city: "Oran", exams: 20, courses: 12, website: "https://www.univ-oran.dz", color: "from-pink-600 to-pink-800", region: "oran" },
+            { name: "UFAS", fullName: "Université Ferhat Abbas", city: "Sétif", exams: 24, courses: 13, website: "https://www.ufas.dz", color: "from-cyan-600 to-cyan-800", region: "other" },
+            { name: "UAB", fullName: "Université Abou Bekr Belkaïd", city: "Tlemcen", exams: 19, courses: 11, website: "https://www.univ-tlemcen.dz", color: "from-emerald-600 to-emerald-800", region: "other" },
+            { name: "UMK", fullName: "Université Mohamed Khider", city: "Biskra", exams: 15, courses: 9, website: "https://www.univ-biskra.dz", color: "from-lime-600 to-lime-800", region: "other" },
+            { name: "UMA", fullName: "Université de Mostaganem", city: "Mostaganem", exams: 16, courses: 10, website: "https://www.univ-mosta.dz", color: "from-amber-600 to-amber-800", region: "other" },
+            { name: "UBMA", fullName: "Université Badji Mokhtar", city: "Annaba", exams: 21, courses: 12, website: "https://www.univ-annaba.dz", color: "from-rose-600 to-rose-800", region: "other" },
+            { name: "UMBB", fullName: "Université M'hamed Bougara", city: "Boumerdès", exams: 26, courses: 15, website: "https://www.univ-boumerdes.dz", color: "from-violet-600 to-violet-800", region: "algiers" },
+            { name: "USDB", fullName: "Université Saad Dahleb", city: "Blida", exams: 23, courses: 14, website: "https://www.univ-blida.dz", color: "from-sky-600 to-sky-800", region: "algiers" },
+            { name: "UHL", fullName: "Université Hassiba Ben Bouali", city: "Chlef", exams: 17, courses: 10, website: "https://www.univ-chlef.dz", color: "from-slate-600 to-slate-800", region: "other" },
+            { name: "UJIK", fullName: "Université Jijel", city: "Jijel", exams: 14, courses: 8, website: "https://www.univ-jijel.dz", color: "from-fuchsia-600 to-fuchsia-800", region: "other" },
+            { name: "UTM", fullName: "Université Tissemsilt", city: "Tissemsilt", exams: 11, courses: 7, website: "https://www.univ-tissemsilt.dz", color: "from-zinc-600 to-zinc-800", region: "other" }
+        ];
+
+        const booksData = [
+            { title: "Méthode des Éléments Finis - Tome 1", author: "Gouri Dhatt & Gilbert Touzot", uni: "ENSTP", type: "Référence principale", color: "from-enstp-navy to-enstp-blue" },
+            { title: "Finite Element Procedures", author: "K.J. Bathe", uni: "USTHB", type: "Edition MIT", color: "from-blue-600 to-blue-800" },
+            { title: "The Finite Element Method", author: "O.C. Zienkiewicz", uni: "ENP", type: "7th Edition", color: "from-purple-600 to-purple-800" },
+            { title: "Programming the FEM in MATLAB", author: "G.R. Liu", uni: "Polytechnique", type: "Avec codes sources", color: "from-green-600 to-green-800" },
+            { title: "Formulaire MEF Complet", author: "Dr. Ahmed Benyagoub", uni: "ENSTP", type: "Résumé des formules", color: "from-enstp-gold to-yellow-600" },
+            { title: "Introduction to FEM", author: "J.N. Reddy", uni: "UC", type: "McGraw-Hill", color: "from-orange-600 to-orange-800" }
+        ];
+
+        const videosData = [
+            { title: "Introduction complète à la Méthode des Éléments Finis", channel: "ENSTP Officiel", views: "12.5k", duration: "24:35", thumbnail: "bg-enstp-navy" },
+            { title: "Matrice de rigidité - Éléments Barres", channel: "Dr. Assas", views: "8.3k", duration: "18:42", thumbnail: "bg-enstp-blue" },
+            { title: "Assemblage des matrices - Exemple pratique", channel: "USTHB", views: "15.7k", duration: "32:15", thumbnail: "bg-blue-600" },
+            { title: "Éléments finis pour les poutres", channel: "Mme Mehiaoui", views: "6.2k", duration: "28:20", thumbnail: "bg-purple-600" },
+            { title: "Simulation 3D avec ANSYS", channel: "ENP Alger", views: "22.1k", duration: "45:00", thumbnail: "bg-green-600" },
+            { title: "Résolution de systèmes - Gauss", channel: "Prof. Benkhedda", views: "9.8k", duration: "19:45", thumbnail: "bg-orange-600" }
+        ];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            initThreeJS();
+            populateExamsUniversities();
+            populateCoursesUniversities();
+            populateBooks();
+            populateVideos();
+            initAttendanceTable();
+            initGradesTable();
+        });
+
+        // Three.js
+        function initThreeJS() {
+            const container = document.getElementById('canvas-container');
+            const scene = new THREE.Scene();
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            container.appendChild(renderer.domElement);
+
+            const material = new THREE.MeshBasicMaterial({ color: 0xD4AF37, wireframe: true, transparent: true, opacity: 0.1 });
+            
+            for (let i = 0; i < 5; i++) {
+                const mesh = new THREE.Mesh(new THREE.IcosahedronGeometry(1, 0), material);
+                mesh.position.set((Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 10);
+                scene.add(mesh);
+            }
+
+            camera.position.z = 5;
+            function animate() {
+                requestAnimationFrame(animate);
+                scene.children.forEach(child => {
+                    child.rotation.x += 0.001;
+                    child.rotation.y += 0.001;
+                });
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+
+        // Navigation
+        function showSection(sectionName) {
+            document.querySelectorAll('main > section').forEach(section => {
+                if (section.id !== 'home-section') section.classList.add('hidden');
+            });
+            
+            const target = document.getElementById(sectionName + '-section');
+            if (target) {
+                target.classList.remove('hidden');
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+            
+            if (sectionName === 'attendance') initAttendanceTable();
+            if (sectionName === 'grades') initGradesTable();
+            
+            document.getElementById('mobileMenu').classList.add('translate-x-full');
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileMenu').classList.toggle('translate-x-full');
+        }
+
+        function switchLanguage(lang) {
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('bg-white', btn.dataset.lang === lang);
+                btn.classList.toggle('shadow-sm', btn.dataset.lang === lang);
+                btn.classList.toggle('text-enstp-navy', btn.dataset.lang === lang);
+                btn.classList.toggle('text-gray-500', btn.dataset.lang !== lang);
+            });
+        }
+
+        function switchSemester(sem) {
+            const btnS3 = document.getElementById('btn-s3');
+            const btnS4 = document.getElementById('btn-s4');
+            const contentS3 = document.getElementById('semester3-content');
+            const contentS4 = document.getElementById('semester4-content');
+
+            if (sem === 's3') {
+                btnS3.classList.add('bg-enstp-navy', 'text-white');
+                btnS3.classList.remove('text-gray-600');
+                btnS4.classList.remove('bg-enstp-navy', 'text-white');
+                btnS4.classList.add('text-gray-600');
+                contentS3.classList.remove('hidden');
+                contentS4.classList.add('hidden');
+            } else {
+                btnS4.classList.add('bg-enstp-navy', 'text-white');
+                btnS4.classList.remove('text-gray-600');
+                btnS3.classList.remove('bg-enstp-navy', 'text-white');
+                btnS3.classList.add('text-gray-600');
+                contentS4.classList.remove('hidden');
+                contentS3.classList.add('hidden');
+            }
+        }
+
+        // Attendance - Editable Table
+        let attendanceData = [];
+        
+        function initAttendanceTable() {
+            const tbody = document.getElementById('attendanceTableBody');
+            tbody.innerHTML = '';
+            attendanceData = [];
+            
+            // Add default empty rows
+            for (let i = 1; i <= 5; i++) {
+                addStudentRow();
+            }
+        }
+
+        function addStudentRow() {
+            const tbody = document.getElementById('attendanceTableBody');
+            const rowNum = tbody.children.length + 1;
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="p-3 font-semibold">${rowNum}</td>
+                <td class="p-3"><input type="text" placeholder="Matricule" class="w-full text-xs"></td>
+                <td class="p-3"><input type="text" placeholder="Nom" class="w-full"></td>
+                <td class="p-3"><input type="text" placeholder="Prénom" class="w-full"></td>
+                <td class="p-3 text-center">
+                    <select onchange="updateAttendancePoints(this)" class="presence-select">
+                        <option value="P" class="presence-present">P</option>
+                        <option value="A" class="presence-absent">A</option>
+                        <option value="J" class="presence-justified">J</option>
+                    </select>
+                </td>
+                <td class="p-3 text-center">
+                    <select onchange="updateAttendancePoints(this)" class="presence-select">
+                        <option value="P" class="presence-present">P</option>
+                        <option value="A" class="presence-absent">A</option>
+                        <option value="J" class="presence-justified">J</option>
+                    </select>
+                </td>
+                <td class="p-3 text-center">
+                    <select onchange="updateAttendancePoints(this)" class="presence-select">
+                        <option value="P" class="presence-present">P</option>
+                        <option value="A" class="presence-absent">A</option>
+                        <option value="J" class="presence-justified">J</option>
+                    </select>
+                </td>
+                <td class="p-3 text-center">
+                    <select onchange="updateAttendancePoints(this)" class="presence-select">
+                        <option value="P" class="presence-present">P</option>
+                        <option value="A" class="presence-absent">A</option>
+                        <option value="J" class="presence-justified">J</option>
+                    </select>
+                </td>
+                <td class="p-3 text-center font-bold text-red-600 absences-count">0</td>
+                <td class="p-3 text-center font-bold text-enstp-gold points-display">2.0</td>
+                <td class="p-3 text-center">
+                    <button onclick="deleteRow(this)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+            updateAllAttendancePoints();
+        }
+
+        function updateAttendancePoints(select) {
+            updateAllAttendancePoints();
+        }
+
+        function updateAllAttendancePoints() {
+            const rows = document.querySelectorAll('#attendanceTableBody tr');
+            rows.forEach(row => {
+                const selects = row.querySelectorAll('.presence-select');
+                let absences = 0;
+                
+                selects.forEach(select => {
+                    if (select.value === 'A') absences++;
+                });
+                
+                // Calculate points: 0abs=2, 1abs=1.5, 2abs=1, 3abs=0.5, 4+=0
+                let points = 2;
+                if (absences === 1) points = 1.5;
+                else if (absences === 2) points = 1;
+                else if (absences === 3) points = 0.5;
+                else if (absences >= 4) points = 0;
+                
+                row.querySelector('.absences-count').textContent = absences;
+                row.querySelector('.points-display').textContent = points.toFixed(1);
+            });
+        }
+
+        function deleteRow(btn) {
+            btn.closest('tr').remove();
+            // Re-number rows
+            const rows = document.querySelectorAll('#attendanceTableBody tr');
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+        }
+
+        function saveAttendance() {
+            alert('Présences enregistrées avec succès !');
+        }
+
+        // Grades - Editable Table
+        function initGradesTable() {
+            const tbody = document.getElementById('gradesTableBody');
+            tbody.innerHTML = '';
+            
+            // Add default empty rows
+            for (let i = 1; i <= 5; i++) {
+                addGradeRow();
+            }
+        }
+
+        function addGradeRow() {
+            const tbody = document.getElementById('gradesTableBody');
+            const rowNum = tbody.children.length + 1;
+            
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="p-3 font-semibold">${rowNum}</td>
+                <td class="p-3"><input type="text" placeholder="Matricule" class="w-full text-xs"></td>
+                <td class="p-3"><input type="text" placeholder="Nom" class="w-full"></td>
+                <td class="p-3"><input type="text" placeholder="Prénom" class="w-full"></td>
+                <td class="p-3"><input type="number" min="0" max="2" step="0.5" value="2" class="w-full presence-grade" onchange="calculateCC(this)"></td>
+                <td class="p-3"><input type="number" min="0" max="5" step="0.25" value="0" class="w-full" onchange="calculateCC(this)"></td>
+                <td class="p-3"><input type="number" min="0" max="10" step="0.25" value="0" class="w-full" onchange="calculateCC(this)"></td>
+                <td class="p-3"><input type="number" min="0" max="3" step="0.25" value="0" class="w-full" onchange="calculateCC(this)"></td>
+                <td class="p-3 font-bold text-enstp-blue cc-total">0.00</td>
+                <td class="p-3"><input type="number" min="0" max="20" step="0.25" value="0" class="w-full exam-grade" onchange="calculateFinal(this)"></td>
+                <td class="p-3 font-bold text-enstp-navy final-grade">0.00</td>
+                <td class="p-3 text-center">
+                    <button onclick="deleteGradeRow(this)" class="text-red-500 hover:text-red-700"><i class="fas fa-trash"></i></button>
+                </td>
+            `;
+            
+            tbody.appendChild(row);
+        }
+
+        function calculateCC(input) {
+            const row = input.closest('tr');
+            const presence = parseFloat(row.querySelector('.presence-grade').value) || 0;
+            const participation = parseFloat(row.cells[5].querySelector('input').value) || 0;
+            const interro = parseFloat(row.cells[6].querySelector('input').value) || 0;
+            const cours = parseFloat(row.cells[7].querySelector('input').value) || 0;
+            
+            const ccTotal = presence + participation + interro + cours;
+            row.querySelector('.cc-total').textContent = ccTotal.toFixed(2);
+            
+            calculateFinal(input);
+        }
+
+        function calculateFinal(input) {
+            const row = input.closest('tr');
+            const ccTotal = parseFloat(row.querySelector('.cc-total').textContent) || 0;
+            const exam = parseFloat(row.querySelector('.exam-grade').value) || 0;
+            
+            const final = (ccTotal + exam) / 2;
+            const finalCell = row.querySelector('.final-grade');
+            finalCell.textContent = final.toFixed(2);
+            
+            // Color coding
+            finalCell.className = 'p-3 font-bold final-grade ' + (final >= 10 ? 'text-green-600' : 'text-red-600');
+            
+            updateGradeStats();
+        }
+
+        function deleteGradeRow(btn) {
+            btn.closest('tr').remove();
+            const rows = document.querySelectorAll('#gradesTableBody tr');
+            rows.forEach((row, index) => {
+                row.cells[0].textContent = index + 1;
+            });
+            updateGradeStats();
+        }
+
+        function updateGradeStats() {
+            const finals = document.querySelectorAll('.final-grade');
+            if (finals.length === 0) return;
+            
+            let sum = 0, highest = 0, lowest = 20, passed = 0;
+            finals.forEach(cell => {
+                const val = parseFloat(cell.textContent) || 0;
+                sum += val;
+                if (val > highest) highest = val;
+                if (val < lowest) lowest = val;
+                if (val >= 10) passed++;
+            });
+            
+            document.getElementById('statAverage').textContent = (sum / finals.length).toFixed(2);
+            document.getElementById('statHighest').textContent = highest.toFixed(2);
+            document.getElementById('statLowest').textContent = lowest.toFixed(2);
+            document.getElementById('statSuccess').textContent = Math.round((passed / finals.length) * 100) + '%';
+        }
+
+        function importFromAttendance() {
+            // Get attendance points from attendance table
+            const attRows = document.querySelectorAll('#attendanceTableBody tr');
+            const gradeRows = document.querySelectorAll('#gradesTableBody tr');
+            
+            attRows.forEach((attRow, index) => {
+                if (gradeRows[index]) {
+                    const points = attRow.querySelector('.points-display').textContent;
+                    const input = gradeRows[index].querySelector('.presence-grade');
+                    input.value = points;
+                    calculateCC(input);
+                }
+            });
+            
+            alert('Points de présence importés !');
+        }
+
+        function saveGrades() {
+            alert('Notes enregistrées avec succès !');
+        }
+
+        function exportToExcel() {
+            alert('Export Excel en cours...');
+        }
+
+        // Populate Universities for Exams
+        function populateExamsUniversities() {
+            const grid = document.getElementById('examsUniversitiesGrid');
+            if (!grid) return;
+            
+            universitiesData.forEach(uni => {
+                const card = document.createElement('div');
+                card.className = 'university-card-new';
+                card.setAttribute('data-region', uni.region);
+                card.innerHTML = `
+                    <div class="university-header bg-gradient-to-br ${uni.color}">
+                        <div class="university-logo bg-gradient-to-br ${uni.color}">
+                            ${uni.name.substring(0, 2)}
+                        </div>
+                    </div>
+                    <div class="p-6 pt-12 text-center">
+                        <h3 class="font-bold text-xl text-enstp-navy mb-2">${uni.name}</h3>
+                        <p class="text-gray-500 text-sm mb-4">${uni.city}</p>
+                        <div class="flex justify-center gap-4 mb-4">
+                            <span class="px-3 py-1 bg-enstp-cream rounded-full text-xs font-semibold text-enstp-navy">${uni.exams} Examens</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <button onclick="showUniversityDetail('${uni.name}')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-file-alt mr-2"></i>Voir
+                            </button>
+                            <a href="${uni.website}" target="_blank" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white transition-all flex items-center justify-center">
+                                <i class="fas fa-external-link-alt mr-2"></i>Site
+                            </a>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Populate Universities for Courses
+        function populateCoursesUniversities() {
+            const grid = document.getElementById('coursesUniversitiesGrid');
+            if (!grid) return;
+            
+            universitiesData.forEach(uni => {
+                const card = document.createElement('div');
+                card.className = 'university-card-new';
+                card.setAttribute('data-region', uni.region);
+                card.innerHTML = `
+                    <div class="university-header bg-gradient-to-br ${uni.color}">
+                        <div class="university-logo bg-gradient-to-br ${uni.color}">
+                            ${uni.name.substring(0, 2)}
+                        </div>
+                    </div>
+                    <div class="p-6 pt-12 text-center">
+                        <h3 class="font-bold text-lg text-enstp-navy mb-2">${uni.name}</h3>
+                        <p class="text-gray-500 text-sm mb-2">${uni.fullName}</p>
+                        <p class="text-enstp-gold font-semibold text-sm mb-4">${uni.city}</p>
+                        <div class="flex justify-center gap-3 mb-4">
+                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">${uni.courses} Cours</span>
+                            <span class="px-2 py-1 bg-gray-100 rounded text-xs">${Math.floor(uni.courses * 1.5)} TD</span>
+                        </div>
+                        <button onclick="showUniversityCourses('${uni.name}')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                            Accéder aux cours
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Filter functions
+        function filterUniversities(region) {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active', 'bg-enstp-navy', 'text-white');
+                btn.classList.add('text-enstp-navy');
+            });
+            event.target.classList.add('active', 'bg-enstp-navy', 'text-white');
+            event.target.classList.remove('text-enstp-navy');
+            
+            const cards = document.querySelectorAll('#coursesUniversitiesGrid .university-card-new');
+            cards.forEach(card => {
+                if (region === 'all' || card.getAttribute('data-region') === region) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Books
+        function populateBooks() {
+            const grid = document.getElementById('booksGrid');
+            if (!grid) return;
+            
+            booksData.forEach(book => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 group hover:shadow-xl transition-all book-card';
+                card.setAttribute('data-uni', book.uni);
+                card.innerHTML = `
+                    <div class="h-48 bg-gradient-to-br ${book.color} flex items-center justify-center relative overflow-hidden">
+                        <i class="fas fa-book text-6xl text-white/30 group-hover:scale-110 transition-transform duration-500"></i>
+                        <div class="absolute top-4 right-4 px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-bold rounded-full">${book.uni}</div>
+                    </div>
+                    <div class="p-6">
+                        <span class="text-xs text-enstp-gold font-semibold">${book.type}</span>
+                        <h3 class="font-bold text-lg mb-2 line-clamp-2 text-enstp-navy">${book.title}</h3>
+                        <p class="text-gray-600 text-sm mb-4">${book.author}</p>
+                        <button class="w-full py-2 rounded-lg bg-enstp-navy text-white font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-eye mr-2"></i>Consulter
+                        </button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterBooks(uni) {
+            document.querySelectorAll('#libraryUniversityFilter button').forEach(btn => {
+                btn.classList.remove('bg-enstp-navy', 'text-white');
+                btn.classList.add('bg-gray-100', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-100', 'text-gray-700');
+            event.target.classList.add('bg-enstp-navy', 'text-white');
+            
+            const cards = document.querySelectorAll('.book-card');
+            cards.forEach(card => {
+                if (uni === 'all' || card.getAttribute('data-uni') === uni) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        // Videos
+        function populateVideos() {
+            const grid = document.getElementById('videosGrid');
+            if (!grid) return;
+            
+            videosData.forEach(video => {
+                const card = document.createElement('div');
+                card.className = 'video-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100';
+                card.onclick = () => openVideo(video.title);
+                card.innerHTML = `
+                    <div class="relative h-48 ${video.thumbnail}">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-play-circle play-btn text-6xl text-white/80 transition-all"></i>
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">${video.duration}</div>
+                        <div class="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-xs rounded font-semibold">YouTube</div>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-bold mb-2 line-clamp-2 text-enstp-navy">${video.title}</h3>
+                        <p class="text-sm text-gray-600 mb-2">${video.channel}</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-eye mr-1"></i>${video.views} vues</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function openVideo(title) {
+            alert('Ouverture de la vidéo: ' + title);
+        }
+
+        function loadMoreVideos() {
+            alert('Chargement de plus de vidéos...');
+        }
+
+        // AI Chat
+        function handleAIInput(e) {
+            if (e.key === 'Enter') sendAIMessage();
+        }
+
+        function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const box = document.getElementById('aiChatBox');
+            
+            // User message
+            const userDiv = document.createElement('div');
+            userDiv.className = 'flex items-start space-x-3 flex-row-reverse';
+            userDiv.innerHTML = `
+                <div class="w-8 h-8 rounded-full bg-enstp-navy flex-shrink-0 flex items-center justify-center"><i class="fas fa-user text-white text-xs"></i></div>
+                <div class="bg-enstp-navy text-white rounded-2xl rounded-tr-none p-4 max-w-[80%] text-sm">${message}</div>
+            `;
+            box.appendChild(userDiv);
+            input.value = '';
+            box.scrollTop = box.scrollHeight;
+
+            // AI Response
+            setTimeout(() => {
+                const responses = [
+                    "Pour calculer la matrice de rigidité: [k] = (EA/L) × [[1, -1], [-1, 1]]",
+                    "Les conditions aux limites essentielles imposent les déplacements.",
+                    "Souhaitez-vous une simulation 3D ?",
+                    "Vérifions votre assemblage..."
+                ];
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'flex items-start space-x-3';
+                aiDiv.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-enstp-gold flex-shrink-0 flex items-center justify-center"><i class="fas fa-robot text-white text-xs"></i></div>
+                    <div class="bg-white/10 text-white rounded-2xl rounded-tl-none p-4 max-w-[80%] text-sm">${responses[Math.floor(Math.random() * responses.length)]}</div>
+                `;
+                box.appendChild(aiDiv);
+                box.scrollTop = box.scrollHeight;
+            }, 1000);
+        }
+
+        // Utility functions
+        function showUniversityDetail(uniName) {
+            const uni = universitiesData.find(u => u.name === uniName);
+            if (!uni) return;
+            
+            const modal = document.getElementById('universityModal');
+            const content = document.getElementById('universityModalContent');
+            
+            content.innerHTML = `
+                <div class="bg-gradient-to-br ${uni.color} p-8 text-white relative overflow-hidden">
+                    <button onclick="closeUniversityModal()" class="absolute top-4 right-4 w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30">
+                        <i class="fas fa-times"></i>
+                    </button>
+                    <div class="text-center">
+                        <div class="w-24 h-24 bg-white rounded-full mx-auto mb-4 flex items-center justify-center text-3xl font-bold text-gray-800 shadow-2xl">
+                            ${uni.name.substring(0, 2)}
+                        </div>
+                        <h2 class="text-3xl font-bold mb-2">${uni.name}</h2>
+                        <p class="text-white/80">${uni.fullName}</p>
+                        <p class="text-enstp-gold font-semibold mt-2">${uni.city}</p>
+                    </div>
+                </div>
+                <div class="p-8">
+                    <div class="grid md:grid-cols-3 gap-6 mb-8">
+                        <div class="text-center p-6 bg-enstp-cream rounded-2xl">
+                            <div class="text-3xl font-bold text-enstp-navy mb-2">${uni.exams}</div>
+                            <div class="text-gray-600 text-sm">Examens</div>
+                        </div>
+                        <div class="text-center p-6 bg-enstp-cream rounded-2xl">
+                            <div class="text-3xl font-bold text-enstp-navy mb-2">${uni.courses}</div>
+                            <div class="text-gray-600 text-sm">Cours</div>
+                        </div>
+                        <div class="text-center p-6 bg-enstp-cream rounded-2xl">
+                            <div class="text-3xl font-bold text-enstp-navy mb-2">${Math.floor(uni.courses * 1.5)}</div>
+                            <div class="text-gray-600 text-sm">TD</div>
+                        </div>
+                    </div>
+                    <div class="space-y-3">
+                        <a href="${uni.website}" target="_blank" class="block w-full py-4 bg-enstp-navy text-white text-center rounded-xl font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-external-link-alt mr-2"></i>Visiter le site officiel
+                        </a>
+                        <button onclick="alert('Téléchargement des examens...')" class="block w-full py-4 bg-enstp-gold text-enstp-navy text-center rounded-xl font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-download mr-2"></i>Télécharger tous les examens
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            modal.classList.remove('hidden');
+        }
+
+        function showUniversityCourses(uniName) {
+            showUniversityDetail(uniName);
+        }
+
+        function closeUniversityModal() {
+            document.getElementById('universityModal').classList.add('hidden');
+        }
+
+        function showUniversityExams(uniName) {
+            showUniversityDetail(uniName);
+        }
+
+        function updateAttendanceTable() {
+            const specialty = document.getElementById('attSpecialty').value;
+            const group = document.getElementById('attGroup').value;
+            document.getElementById('attTableTitle').textContent = `${specialty.toUpperCase()} - Groupe ${group}`;
+        }
+
+        function updateGradesTable() {
+            const specialty = document.getElementById('gradeSpecialty').value;
+            const group = document.getElementById('gradeGroup').value;
+            const semester = document.getElementById('gradeSemester').value;
+            const semName = semester === 's3' ? 'Semestre 03' : 'Semestre 04';
+            document.getElementById('gradesTableTitle').textContent = `${specialty.toUpperCase()} - Groupe ${group} - ${semName}`;
+        }
+    </script>
+</body>
+</html>
