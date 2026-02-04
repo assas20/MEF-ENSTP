@@ -8,6 +8,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -229,6 +231,127 @@
             background-color: #FAF9F6;
             transform: translateX(5px);
         }
+        .td-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        .td-card:hover {
+            transform: translateY(-5px);
+            border-color: #D4AF37;
+            box-shadow: 0 15px 35px rgba(10, 22, 40, 0.1);
+        }
+        .video-category-card {
+            background: white;
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        .video-category-card:hover {
+            border-color: #D4AF37;
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+        }
+        .code-tab {
+            padding: 0.75rem 1.5rem;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .code-tab.active {
+            border-bottom-color: #D4AF37;
+            color: #D4AF37;
+            font-weight: 600;
+        }
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            overflow-x: auto;
+        }
+        .scholar-icon { color: #4285F4; }
+        .researchgate-icon { color: #00CCBB; }
+        .orcid-icon { color: #A6CE39; }
+        .contact-card {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            border: 1px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        .contact-card:hover {
+            box-shadow: 0 20px 40px rgba(10, 22, 40, 0.1);
+            transform: translateY(-5px);
+        }
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .social-link:hover {
+            transform: translateY(-2px);
+        }
+        .dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            min-width: 250px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+            transition: all 0.3s ease;
+            z-index: 100;
+            border: 1px solid #e5e7eb;
+        }
+        .dropdown:hover .dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .dropdown-item:hover {
+            background: #FAF9F6;
+            color: #D4AF37;
+        }
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+        .exam-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .exam-item {
+            padding: 1rem;
+            border-bottom: 1px solid #e5e7eb;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .exam-item:hover {
+            background: #FAF9F6;
+        }
+        .exam-item:hover .exam-title {
+            color: #D4AF37;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -264,7 +387,16 @@
                     <a href="#" onclick="showSection('home')" class="nav-item text-sm font-semibold text-enstp-navy hover:text-enstp-gold transition-colors">Accueil</a>
                     <a href="#" onclick="showSection('courses')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Cours 📑</a>
                     <a href="#" onclick="showSection('td')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">TD</a>
-                    <a href="#" onclick="showSection('exams')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Examens 📝</a>
+                    <a href="#" onclick="showSection('tp')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">TP 💻</a>
+                    <div class="dropdown relative">
+                        <a href="#" onclick="showSection('exams')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors flex items-center">
+                            Examens 📝 <i class="fas fa-chevron-down ml-1 text-xs"></i>
+                        </a>
+                        <div class="dropdown-menu" id="examsDropdown">
+                            <div class="p-3 bg-enstp-navy text-white font-bold text-sm rounded-t-12">Sélectionner une université</div>
+                            <div class="exam-list" id="examsDropdownList"></div>
+                        </div>
+                    </div>
                     <a href="#" onclick="showSection('homework')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Devoirs</a>
                     <a href="#" onclick="showSection('grades')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Notes 📊</a>
                     <a href="#" onclick="showSection('attendance')" class="nav-item text-sm font-semibold text-gray-600 hover:text-enstp-gold transition-colors">Présence</a>
@@ -301,6 +433,7 @@
             <a href="#" onclick="showSection('home'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Accueil</a>
             <a href="#" onclick="showSection('courses'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Cours 📑</a>
             <a href="#" onclick="showSection('td'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">TD</a>
+            <a href="#" onclick="showSection('tp'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">TP 💻</a>
             <a href="#" onclick="showSection('exams'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Examens 📝</a>
             <a href="#" onclick="showSection('homework'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Devoirs</a>
             <a href="#" onclick="showSection('grades'); toggleMobileMenu()" class="block py-3 text-lg font-semibold border-b border-gray-100">Notes 📊</a>
@@ -382,7 +515,7 @@
         <!-- QUICK ACCESS -->
         <section class="py-8 bg-white border-b border-gray-100">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="grid grid-cols-4 md:grid-cols-8 gap-3">
+                <div class="grid grid-cols-4 md:grid-cols-10 gap-3">
                     <button onclick="showSection('courses')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
                         <i class="fas fa-book text-xl mb-1 text-enstp-blue group-hover:text-white"></i>
                         <p class="text-xs font-semibold">Cours 📑</p>
@@ -390,6 +523,10 @@
                     <button onclick="showSection('td')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
                         <i class="fas fa-tasks text-xl mb-1 text-enstp-gold group-hover:text-white"></i>
                         <p class="text-xs font-semibold">TD</p>
+                    </button>
+                    <button onclick="showSection('tp')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-laptop-code text-xl mb-1 text-purple-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">TP 💻</p>
                     </button>
                     <button onclick="showSection('exams')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
                         <i class="fas fa-file-alt text-xl mb-1 text-purple-600 group-hover:text-white"></i>
@@ -415,6 +552,10 @@
                         <i class="fas fa-book-open text-xl mb-1 text-indigo-600 group-hover:text-white"></i>
                         <p class="text-xs font-semibold">Livre 📚</p>
                     </button>
+                    <button onclick="showSection('program')" class="p-3 rounded-xl bg-enstp-cream hover:bg-enstp-navy hover:text-white transition-all group text-center">
+                        <i class="fas fa-calendar-alt text-xl mb-1 text-teal-600 group-hover:text-white"></i>
+                        <p class="text-xs font-semibold">Programme 📃</p>
+                    </button>
                 </div>
             </div>
         </section>
@@ -424,45 +565,55 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-8">
                     <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Liste de Présence</h2>
-                    <p class="text-gray-600">Gérez les présences manuellement. Les points sont calculés automatiquement.</p>
+                    <p class="text-gray-600">Gérez les présences manuellement. Les points sont calculés automatiquement par semestre.</p>
                 </div>
 
                 <!-- Session Info -->
                 <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100">
-                    <div class="grid md:grid-cols-4 gap-4">
+                    <div class="grid md:grid-cols-5 gap-4">
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Date</label>
                             <input type="date" id="attDate" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
                         </div>
                         <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Semestre</label>
+                            <select id="attSemester" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateAttendanceTable()">
+                                <option value="s3">Semestre 03</option>
+                                <option value="s4">Semestre 04</option>
+                            </select>
+                        </div>
+                        <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Spécialité</label>
                             <select id="attSpecialty" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateAttendanceTable()">
-                                <option value="dib">DIB</option>
-                                <option value="dms">DMS</option>
+                                <option value="DIB">DIB</option>
+                                <option value="DMS">DMS</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Groupe</label>
                             <select id="attGroup" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateAttendanceTable()">
-                                <option value="01">Groupe 01</option>
-                                <option value="02">Groupe 02</option>
-                                <option value="03">Groupe 03</option>
-                                <option value="04">Groupe 04</option>
-                                <option value="05">Groupe 05</option>
-                                <option value="06">Groupe 06</option>
-                                <option value="07">Groupe 07</option>
-                                <option value="08">Groupe 08</option>
-                                <option value="09">Groupe 09</option>
-                                <option value="10">Groupe 10</option>
+                                <option value="G01">Groupe 01</option>
+                                <option value="G02">Groupe 02</option>
+                                <option value="G03">Groupe 03</option>
+                                <option value="G04">Groupe 04</option>
+                                <option value="G05">Groupe 05</option>
+                                <option value="G06">Groupe 06</option>
+                                <option value="G07">Groupe 07</option>
+                                <option value="G08">Groupe 08</option>
+                                <option value="G09">Groupe 09</option>
+                                <option value="G10">Groupe 10</option>
                             </select>
                         </div>
                         <div>
-                            <label class="block text-sm font-semibold text-gray-700 mb-2">Séance</label>
-                            <select id="attSession" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
-                                <option>TD 01 - Séance 1</option>
-                                <option>TD 01 - Séance 2</option>
-                                <option>TD 02 - Séance 1</option>
-                                <option>TD 02 - Séance 2</option>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">TD</label>
+                            <select id="attTD" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateAttendanceSessions()">
+                                <option value="TD01">TD N°01</option>
+                                <option value="TD02">TD N°02</option>
+                                <option value="TD03">TD N°03</option>
+                                <option value="TD04">TD N°04</option>
+                                <option value="TD05">TD N°05</option>
+                                <option value="TD06">TD N°06</option>
+                                <option value="TD07">TD N°07</option>
                             </select>
                         </div>
                     </div>
@@ -471,8 +622,11 @@
                 <!-- Attendance Table -->
                 <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 mb-6">
                     <div class="p-4 bg-enstp-navy text-white flex justify-between items-center">
-                        <h3 class="font-bold text-lg" id="attTableTitle">DIB - Groupe 01</h3>
+                        <h3 class="font-bold text-lg" id="attTableTitle">DIB - Groupe 01 - Semestre 03</h3>
                         <div class="flex space-x-3">
+                            <button onclick="exportAttendancePDF()" class="px-4 py-2 bg-white text-enstp-navy rounded-lg font-semibold text-sm hover:bg-gray-100">
+                                <i class="fas fa-file-pdf mr-2"></i>PDF
+                            </button>
                             <button onclick="addStudentRow()" class="px-4 py-2 bg-enstp-gold text-enstp-navy rounded-lg font-semibold text-sm hover:bg-opacity-90">
                                 <i class="fas fa-plus mr-2"></i>Ajouter étudiant
                             </button>
@@ -494,7 +648,7 @@
                                     <th class="p-3 text-center">Séance 3</th>
                                     <th class="p-3 text-center">Séance 4</th>
                                     <th class="p-3 text-center">Total Abs</th>
-                                    <th class="p-3 text-center">Points /2</th>
+                                    <th class="p-3 text-center">Points /20</th>
                                     <th class="p-3 text-center">Action</th>
                                 </tr>
                             </thead>
@@ -521,10 +675,15 @@
                             <span class="w-4 h-4 rounded bg-blue-100 border border-blue-500"></span>
                             <span class="text-sm">Justifié (J)</span>
                         </div>
+                        <div class="flex items-center space-x-2">
+                            <span class="w-4 h-4 rounded bg-gray-100 border border-gray-400"></span>
+                            <span class="text-sm">Non applicable (/)</span>
+                        </div>
                     </div>
                     <div class="mt-4 p-4 bg-enstp-cream rounded-xl">
-                        <h5 class="font-semibold mb-2">Barème de points (sur 2):</h5>
+                        <h5 class="font-semibold mb-2">Barème de points CC Présence (sur 2):</h5>
                         <p class="text-sm text-gray-700">0 absence = 2 pts | 1 absence = 1.5 pts | 2 absences = 1 pt | 3 absences = 0.5 pt | 4+ absences = 0 pt</p>
+                        <p class="text-xs text-gray-500 mt-2">Le calcul se fait par semestre (S3 ou S4)</p>
                     </div>
                 </div>
             </div>
@@ -544,28 +703,28 @@
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Spécialité</label>
                             <select id="gradeSpecialty" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateGradesTable()">
-                                <option value="dib">DIB</option>
-                                <option value="dms">DMS</option>
+                                <option value="DIB">DIB</option>
+                                <option value="DMS">DMS</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Groupe</label>
                             <select id="gradeGroup" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateGradesTable()">
-                                <option value="01">Groupe 01</option>
-                                <option value="02">Groupe 02</option>
-                                <option value="03">Groupe 03</option>
-                                <option value="04">Groupe 04</option>
-                                <option value="05">Groupe 05</option>
-                                <option value="06">Groupe 06</option>
-                                <option value="07">Groupe 07</option>
-                                <option value="08">Groupe 08</option>
-                                <option value="09">Groupe 09</option>
-                                <option value="10">Groupe 10</option>
+                                <option value="G01">Groupe 01</option>
+                                <option value="G02">Groupe 02</option>
+                                <option value="G03">Groupe 03</option>
+                                <option value="G04">Groupe 04</option>
+                                <option value="G05">Groupe 05</option>
+                                <option value="G06">Groupe 06</option>
+                                <option value="G07">Groupe 07</option>
+                                <option value="G08">Groupe 08</option>
+                                <option value="G09">Groupe 09</option>
+                                <option value="G10">Groupe 10</option>
                             </select>
                         </div>
                         <div>
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Semestre</label>
-                            <select id="gradeSemester" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                            <select id="gradeSemester" class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" onchange="updateGradesTable()">
                                 <option value="s3">Semestre 03</option>
                                 <option value="s4">Semestre 04</option>
                             </select>
@@ -574,6 +733,27 @@
                             <button onclick="addGradeRow()" class="w-full px-4 py-2 bg-enstp-gold text-white rounded-xl font-semibold hover:bg-opacity-90">
                                 <i class="fas fa-plus mr-2"></i>Ajouter étudiant
                             </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Teacher Info -->
+                <div class="bg-white rounded-2xl shadow-lg p-6 mb-6 border border-gray-100" id="teacherInfoBox">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h4 class="font-bold text-enstp-navy mb-3">Informations Enseignants</h4>
+                            <div class="space-y-2">
+                                <p class="text-sm"><span class="font-semibold">Spécialité:</span> <span id="infoSpecialty">DIB</span></p>
+                                <p class="text-sm"><span class="font-semibold">Groupe:</span> <span id="infoGroup">G01</span></p>
+                                <p class="text-sm"><span class="font-semibold">Enseignant:</span> <span id="infoTeacher">Mehiaoui Yasmina Mahdia</span></p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end">
+                            <div class="trilingual-name text-right">
+                                <div class="ar font-arabic text-xl text-enstp-gold font-bold">المدرسة الوطنية العليا للأشغال العمومية</div>
+                                <div class="fr font-serif text-lg text-enstp-navy font-bold mt-1">École Nationale Supérieure des Travaux Publics</div>
+                                <div class="en text-sm text-gray-600 mt-1">National Higher School of Public Works</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -610,14 +790,17 @@
                     <div class="p-4 bg-enstp-cream border-b border-gray-200 flex justify-between items-center">
                         <h3 class="font-bold text-lg text-enstp-navy" id="gradesTableTitle">DIB - Groupe 01 - Semestre 03</h3>
                         <div class="flex space-x-3">
+                            <button onclick="exportGradesPDF()" class="px-4 py-2 bg-red-600 text-white rounded-lg font-semibold text-sm hover:bg-opacity-90">
+                                <i class="fas fa-file-pdf mr-2"></i>PDF
+                            </button>
+                            <button onclick="exportGradesExcel()" class="px-4 py-2 bg-green-600 text-white rounded-lg font-semibold text-sm hover:bg-opacity-90">
+                                <i class="fas fa-file-excel mr-2"></i>Excel
+                            </button>
                             <button onclick="importFromAttendance()" class="px-4 py-2 bg-enstp-blue text-white rounded-lg font-semibold text-sm hover:bg-opacity-90">
                                 <i class="fas fa-import mr-2"></i>Importer Présences
                             </button>
                             <button onclick="saveGrades()" class="px-4 py-2 bg-enstp-navy text-white rounded-lg font-semibold text-sm hover:bg-opacity-90">
                                 <i class="fas fa-save mr-2"></i>Enregistrer
-                            </button>
-                            <button onclick="exportToExcel()" class="px-4 py-2 border-2 border-enstp-navy text-enstp-navy rounded-lg font-semibold text-sm hover:bg-enstp-navy hover:text-white">
-                                <i class="fas fa-file-excel mr-2"></i>Excel
                             </button>
                         </div>
                     </div>
@@ -668,12 +851,23 @@
             </div>
         </section>
 
-        <!-- EXAMS SECTION - NEW DESIGN -->
+        <!-- EXAMS SECTION - REDESIGNED -->
         <section id="exams-section" class="hidden py-16 bg-enstp-gray">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
                     <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Examens et Contrôle Continu 📝</h2>
                     <p class="text-gray-600">Base de données nationale des examens en PDF</p>
+                </div>
+
+                <!-- Universities List -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 mb-8">
+                    <div class="p-6 bg-enstp-navy text-white">
+                        <h3 class="font-bold text-xl">Sélectionner une université</h3>
+                        <p class="text-gray-300 text-sm mt-1">Cliquez sur une université pour accéder aux examens</p>
+                    </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 p-6" id="examsUniversitiesGrid">
+                        <!-- Populated by JavaScript -->
+                    </div>
                 </div>
 
                 <!-- ENSTP Featured -->
@@ -701,23 +895,16 @@
                         <div class="text-center md:text-right">
                             <div class="text-5xl font-bold text-enstp-gold mb-2">45+</div>
                             <div class="text-gray-300 mb-4">Examens disponibles</div>
-                            <div class="flex space-x-3">
-                                <button onclick="showUniversityExams('ENSTP')" class="px-6 py-3 bg-enstp-gold text-enstp-navy rounded-xl font-bold hover:bg-opacity-90 transition-all">
-                                    <i class="fas fa-file-alt mr-2"></i>Voir les examens
-                                </button>
-                            </div>
+                            <button onclick="showUniversityExams('ENSTP')" class="px-6 py-3 bg-enstp-gold text-enstp-navy rounded-xl font-bold hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-file-alt mr-2"></i>Voir les examens
+                            </button>
                         </div>
                     </div>
-                </div>
-
-                <!-- Other Universities Grid -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="examsUniversitiesGrid">
-                    <!-- Populated by JavaScript -->
                 </div>
             </div>
         </section>
 
-        <!-- COURSES SECTION - NEW DESIGN WITH PDF -->
+        <!-- COURSES SECTION -->
         <section id="courses-section" class="hidden py-16 bg-enstp-gray">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -741,73 +928,517 @@
             </div>
         </section>
 
-        <!-- PDF VIEWER MODAL -->
-        <div id="pdfModal" class="fixed inset-0 z-50 hidden">
-            <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closePDFModal()"></div>
-            <div class="absolute inset-4 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
-                <div class="bg-enstp-navy text-white p-4 flex justify-between items-center">
-                    <h3 id="pdfModalTitle" class="font-bold text-lg">Visualisation du PDF</h3>
-                    <button onclick="closePDFModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-                        <i class="fas fa-times"></i>
-                    </button>
+        <!-- TD SECTION - REDESIGNED -->
+        <section id="td-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
+                    <div>
+                        <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-2">Travaux Dirigés</h2>
+                        <p class="text-gray-600">Séries complètes avec solutions détaillées (PDF + Web)</p>
+                    </div>
+                    
+                    <div class="mt-6 md:mt-0 bg-white rounded-full p-1 shadow-lg border border-gray-200">
+                        <button onclick="switchSemester('s3')" id="btn-s3" class="px-8 py-3 rounded-full font-semibold transition-all bg-enstp-navy text-white shadow-md">Semestre 03</button>
+                        <button onclick="switchSemester('s4')" id="btn-s4" class="px-8 py-3 rounded-full font-semibold transition-all text-gray-600 hover:text-enstp-navy">Semestre 04</button>
+                    </div>
                 </div>
-                <div class="flex-1 overflow-hidden" id="pdfViewerContainer">
-                    <iframe id="pdfViewer" class="w-full h-full border-0"></iframe>
+
+                <!-- Semestre 03 -->
+                <div id="semester3-content" class="space-y-6">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <!-- TD 01 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">01</div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Disponible</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Les éléments Ressorts</h3>
+                            <p class="text-gray-600 text-sm mb-4">Introduction aux éléments finis unidimensionnels</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N01_Ressorts.pdf', 'Série TD N°01 - Ressorts')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/Solution_TD_N01_Ressorts.pdf', 'Solution TD N°01 - Ressorts')" class="w-full py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white flex items-center justify-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution PDF
+                                </button>
+                                <a href="td/Solution_TD_N01_Ressorts.html" target="_blank" class="w-full py-2 rounded-lg bg-enstp-gold text-enstp-navy text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-globe mr-2"></i>Solution Web
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- TD 02 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-green-500 to-green-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">02</div>
+                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Disponible</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Les éléments Barres</h3>
+                            <p class="text-gray-600 text-sm mb-4">Éléments finis pour structures en traction/compression</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N02_Barres.pdf', 'Série TD N°02 - Barres')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/Solution_TD_N02_Barres.pdf', 'Solution TD N°02 - Barres')" class="w-full py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white flex items-center justify-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution PDF
+                                </button>
+                                <a href="td/Solution_TD_N02_Barres.html" target="_blank" class="w-full py-2 rounded-lg bg-enstp-gold text-enstp-navy text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-globe mr-2"></i>Solution Web
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- TD 03 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">03</div>
+                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">En cours</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Les éléments Barres en Treillis</h3>
+                            <p class="text-gray-600 text-sm mb-4">Structures réticulées planes et spatiales</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N03_Treillis.pdf', 'Série TD N°03 - Treillis')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/Solution_TD_N03_Treillis.pdf', 'Solution TD N°03 - Treillis')" class="w-full py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white flex items-center justify-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution PDF
+                                </button>
+                                <a href="td/Solution_TD_N03_Treillis.html" target="_blank" class="w-full py-2 rounded-lg bg-enstp-gold text-enstp-navy text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-globe mr-2"></i>Solution Web
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- TD 04 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-orange-500 to-orange-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">04</div>
+                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">Verrouillé</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Les éléments Poutres</h3>
+                            <p class="text-gray-600 text-sm mb-4">Flexion et moment fléchissant</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N04_Poutres.pdf', 'Série TD N°04 - Poutres')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button disabled class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed flex items-center justify-center">
+                                    <i class="fas fa-lock mr-2"></i>Bientôt
+                                </button>
+                                <button disabled class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed flex items-center justify-center">
+                                    <i class="fas fa-lock mr-2"></i>Bientôt
+                                </button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="bg-gray-50 p-4 flex justify-between items-center">
-                    <span id="pdfFileName" class="text-sm text-gray-600"></span>
-                    <a id="pdfDownloadLink" href="#" download class="px-6 py-2 bg-enstp-gold text-enstp-navy rounded-xl font-semibold hover:bg-opacity-90 transition-all">
-                        <i class="fas fa-download mr-2"></i>Télécharger
-                    </a>
+
+                <!-- Semestre 04 -->
+                <div id="semester4-content" class="hidden space-y-6">
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        <!-- TD 05 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-red-500 to-red-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">05</div>
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">Nouveau</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Structures 2D – États plans</h3>
+                            <p class="text-gray-600 text-sm mb-4">Contraintes planes et déformations planes</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N05_2D_Etats_Plans.pdf', 'Série TD N°05 - 2D États Plans')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/Solution_TD_N05_2D_Etats_Plans.pdf', 'Solution TD N°05 - 2D États Plans')" class="w-full py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white flex items-center justify-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution PDF
+                                </button>
+                                <a href="td/Solution_TD_N05_2D_Etats_Plans.html" target="_blank" class="w-full py-2 rounded-lg bg-enstp-gold text-enstp-navy text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-globe mr-2"></i>Solution Web
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- TD 06 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-teal-500 to-teal-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">06</div>
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">Nouveau</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Transformation géométrique et fonctions de forme</h3>
+                            <p class="text-gray-600 text-sm mb-4">Isoparamétrique et interpolation</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N06_Transformation.pdf', 'Série TD N°06 - Transformation')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/Solution_TD_N06_Transformation.pdf', 'Solution TD N°06 - Transformation')" class="w-full py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white flex items-center justify-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution PDF
+                                </button>
+                                <a href="td/Solution_TD_N06_Transformation.html" target="_blank" class="w-full py-2 rounded-lg bg-enstp-gold text-enstp-navy text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-globe mr-2"></i>Solution Web
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- TD 07 -->
+                        <div class="td-card bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
+                            <div class="flex items-start justify-between mb-4">
+                                <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-700 text-white flex items-center justify-center font-bold text-2xl shadow-lg">07</div>
+                                <span class="px-3 py-1 rounded-full bg-blue-100 text-blue-700 text-xs font-bold">Nouveau</span>
+                            </div>
+                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Formulation isoparamétrique</h3>
+                            <p class="text-gray-600 text-sm mb-4">Intégration numérique et éléments isoparamétriques</p>
+                            <div class="space-y-2">
+                                <button onclick="openPDF('td/Serie_TD_N07_Isoparametrique.pdf', 'Série TD N°07 - Isoparamétrique')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
+                                </button>
+                                <button onclick="openPDF('td/Solution_TD_N07_Isoparametrique.pdf', 'Solution TD N°07 - Isoparamétrique')" class="w-full py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white flex items-center justify-center">
+                                    <i class="fas fa-lightbulb mr-2"></i>Solution PDF
+                                </button>
+                                <a href="td/Solution_TD_N07_Isoparametrique.html" target="_blank" class="w-full py-2 rounded-lg bg-enstp-gold text-enstp-navy text-sm font-semibold hover:bg-opacity-90 flex items-center justify-center">
+                                    <i class="fas fa-globe mr-2"></i>Solution Web
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <!-- UNIVERSITY PDF MODAL -->
-        <div id="universityPDFModal" class="fixed inset-0 z-50 hidden">
-            <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUniversityPDFModal()"></div>
-            <div class="absolute inset-0 flex items-center justify-center p-4">
-                <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
-                    <div id="universityPDFHeader" class="bg-gradient-to-r from-enstp-navy to-enstp-blue p-6 text-white">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h2 id="uniPDFTitle" class="text-2xl font-bold mb-2">Université</h2>
-                                <p id="uniPDFSubtitle" class="text-enstp-gold">Cours et TD disponibles</p>
+        <!-- TP SECTION - NEW -->
+        <section id="tp-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Travaux Pratiques 💻</h2>
+                    <p class="text-gray-600">Fichiers PDF et codes sources pour la MEF</p>
+                </div>
+
+                <!-- TP List -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-2xl mb-4">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3 class="font-bold text-xl text-enstp-navy mb-2">TP 01 - Introduction MATLAB</h3>
+                        <p class="text-gray-600 text-sm mb-4">Premiers pas avec MATLAB pour la MEF</p>
+                        <button onclick="openPDF('tp/TP01_Intro_Matlab.pdf', 'TP 01 - Introduction MATLAB')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-download mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-green-500 to-green-700 text-white flex items-center justify-center text-2xl mb-4">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3 class="font-bold text-xl text-enstp-navy mb-2">TP 02 - Éléments Barres</h3>
+                        <p class="text-gray-600 text-sm mb-4">Implémentation des éléments barres</p>
+                        <button onclick="openPDF('tp/TP02_Elements_Barres.pdf', 'TP 02 - Éléments Barres')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-download mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
+                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white flex items-center justify-center text-2xl mb-4">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h3 class="font-bold text-xl text-enstp-navy mb-2">TP 03 - Maillage 2D</h3>
+                        <p class="text-gray-600 text-sm mb-4">Génération et visualisation de maillages</p>
+                        <button onclick="openPDF('tp/TP03_Maillage_2D.pdf', 'TP 03 - Maillage 2D')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-download mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Code Resources -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                    <div class="p-6 bg-enstp-navy text-white">
+                        <h3 class="font-bold text-xl">Ressources Code</h3>
+                        <p class="text-gray-300 text-sm mt-1">Codes sources et bibliothèques</p>
+                    </div>
+                    
+                    <!-- Tabs -->
+                    <div class="flex border-b border-gray-200 overflow-x-auto">
+                        <div class="code-tab active" onclick="switchCodeTab('matlab')">
+                            <i class="fas fa-calculator mr-2"></i>MATLAB
+                        </div>
+                        <div class="code-tab" onclick="switchCodeTab('python')">
+                            <i class="fab fa-python mr-2"></i>Python
+                        </div>
+                        <div class="code-tab" onclick="switchCodeTab('java')">
+                            <i class="fab fa-java mr-2"></i>Java
+                        </div>
+                        <div class="code-tab" onclick="switchCodeTab('cpp')">
+                            <i class="fas fa-code mr-2"></i>C++
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="p-6">
+                        <!-- MATLAB -->
+                        <div id="code-matlab" class="code-content">
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">stiffness_matrix.m</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Calcul de la matrice de rigidité élémentaire</p>
+                                    <button onclick="downloadCode('matlab/stiffness_matrix.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">assemble.m</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Assemblage des matrices globales</p>
+                                    <button onclick="downloadCode('matlab/assemble.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">solve_system.m</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Résolution du système linéaire</p>
+                                    <button onclick="downloadCode('matlab/solve_system.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">plot_results.m</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Visualisation des résultats</p>
+                                    <button onclick="downloadCode('matlab/plot_results.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
                             </div>
-                            <button onclick="closeUniversityPDFModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
-                                <i class="fas fa-times"></i>
+                            <div class="code-block">
+<pre>function Ke = stiffness_matrix(E, A, L)
+% Matrice de rigidité élémentaire pour un élément barre
+% E: Module de Young
+% A: Section
+% L: Longueur
+
+Ke = (E*A/L) * [1 -1; -1 1];
+end</pre>
+                            </div>
+                        </div>
+
+                        <!-- Python -->
+                        <div id="code-python" class="code-content hidden">
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">fem_core.py</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Cœur de calcul MEF avec NumPy</p>
+                                    <button onclick="downloadCode('python/fem_core.py')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">mesh_generator.py</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Générateur de maillage</p>
+                                    <button onclick="downloadCode('python/mesh_generator.py')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-block">
+<pre>import numpy as np
+
+def stiffness_matrix(E, A, L):
+    """Matrice de rigidité élémentaire"""
+    return (E * A / L) * np.array([[1, -1], [-1, 1]])
+
+def assemble_global(K_global, Ke, nodes):
+    """Assemblage dans la matrice globale"""
+    for i, ni in enumerate(nodes):
+        for j, nj in enumerate(nodes):
+            K_global[ni, nj] += Ke[i, j]
+    return K_global</pre>
+                            </div>
+                        </div>
+
+                        <!-- Java -->
+                        <div id="code-java" class="code-content hidden">
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">FEMSolver.java</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Solveur MEF orienté objet</p>
+                                    <button onclick="downloadCode('java/FEMSolver.java')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">Element.java</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Classe élément fini</p>
+                                    <button onclick="downloadCode('java/Element.java')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-block">
+<pre>public class Element {
+    private double E, A, L;
+    private int[] nodes;
+    
+    public double[][] getStiffnessMatrix() {
+        double k = E * A / L;
+        return new double[][]{{k, -k}, {-k, k}};
+    }
+}</pre>
+                            </div>
+                        </div>
+
+                        <!-- C++ -->
+                        <div id="code-cpp" class="code-content hidden">
+                            <div class="grid md:grid-cols-2 gap-4 mb-4">
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">fem_solver.cpp</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Solveur haute performance</p>
+                                    <button onclick="downloadCode('cpp/fem_solver.cpp')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                                    <h4 class="font-bold text-enstp-navy mb-2">matrix_ops.cpp</h4>
+                                    <p class="text-sm text-gray-600 mb-3">Opérations matricielles</p>
+                                    <button onclick="downloadCode('cpp/matrix_ops.cpp')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                        <i class="fas fa-download mr-2"></i>Télécharger
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="code-block">
+<pre>#include &lt;Eigen/Dense&gt;
+
+using namespace Eigen;
+
+MatrixXd stiffnessMatrix(double E, double A, double L) {
+    double k = E * A / L;
+    MatrixXd Ke(2, 2);
+    Ke << k, -k,
+          -k, k;
+    return Ke;
+}</pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- HOMEWORK SECTION - REDESIGNED -->
+        <section id="homework-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Devoirs Maison</h2>
+                    <p class="text-gray-600">Dossier ENSTP - Devoirs à rendre</p>
+                </div>
+
+                <!-- ENSTP Folder -->
+                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 max-w-3xl mx-auto">
+                    <div class="p-6 bg-gradient-to-r from-enstp-navy to-enstp-blue text-white flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center">
+                                <div class="text-center">
+                                    <div class="font-serif font-bold text-xl text-enstp-navy">ENSTP</div>
+                                </div>
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-xl">Devoirs Maison ENSTP</h3>
+                                <p class="text-enstp-gold">Francis Janson - Kouba</p>
+                            </div>
+                        </div>
+                        <i class="fas fa-folder-open text-4xl text-white/30"></i>
+                    </div>
+                    
+                    <div class="p-6 space-y-4" id="dmList">
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-enstp-cream transition-colors cursor-pointer group" onclick="openPDF('dm/DM_N01.pdf', 'DM N°01')">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-enstp-navy group-hover:text-enstp-gold transition-colors">DM N°01</h4>
+                                    <p class="text-sm text-gray-500">Analyse d'un portique simple</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">À rendre: 15/02/2025</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-enstp-cream transition-colors cursor-pointer group" onclick="openPDF('dm/DM_N02.pdf', 'DM N°02')">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-enstp-navy group-hover:text-enstp-gold transition-colors">DM N°02</h4>
+                                    <p class="text-sm text-gray-500">Treillis spatial 3D</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">À rendre: 01/03/2025</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-enstp-cream transition-colors cursor-pointer group" onclick="openPDF('dm/DM_N03.pdf', 'DM N°03')">
+                            <div class="flex items-center space-x-4">
+                                <div class="w-12 h-12 rounded-xl bg-red-100 text-red-600 flex items-center justify-center">
+                                    <i class="fas fa-file-pdf text-xl"></i>
+                                </div>
+                                <div>
+                                    <h4 class="font-bold text-enstp-navy group-hover:text-enstp-gold transition-colors">DM N°03</h4>
+                                    <p class="text-sm text-gray-500">Poutre continue sur appuis multiples</p>
+                                </div>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">À venir</span>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PROGRAM SECTION - REDESIGNED -->
+        <section id="program-section" class="hidden py-16 bg-enstp-gray">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Programme Pédagogique 📃</h2>
+                    <p class="text-gray-600">Programme officiel de la matière MEF</p>
+                </div>
+
+                <div class="max-w-4xl mx-auto">
+                    <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+                        <div class="p-8 bg-gradient-to-r from-enstp-navy to-enstp-blue text-white text-center">
+                            <div class="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4">
+                                <i class="fas fa-file-pdf text-3xl text-red-600"></i>
+                            </div>
+                            <h3 class="font-bold text-2xl mb-2">Programme MEF 2025-2026</h3>
+                            <p class="text-gray-300">Version officielle - Téléchargeable</p>
+                        </div>
+                        
+                        <div class="p-8">
+                            <div class="grid md:grid-cols-2 gap-6 mb-8">
+                                <div class="p-4 bg-enstp-cream rounded-xl">
+                                    <h4 class="font-bold text-enstp-navy mb-2">Semestre 03</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li>• Introduction à la MEF</li>
+                                        <li>• Éléments 1D (Ressorts, Barres, Poutres)</li>
+                                        <li>• Treillis et structures réticulées</li>
+                                    </ul>
+                                </div>
+                                <div class="p-4 bg-enstp-cream rounded-xl">
+                                    <h4 class="font-bold text-enstp-navy mb-2">Semestre 04</h4>
+                                    <ul class="text-sm text-gray-700 space-y-1">
+                                        <li>• Structures 2D - États plans</li>
+                                        <li>• Transformation géométrique</li>
+                                        <li>• Formulation isoparamétrique</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            
+                            <button onclick="openPDF('program/Programme_MEF_2025_2026.pdf', 'Programme MEF 2025-2026')" class="w-full py-4 rounded-xl bg-enstp-navy text-white font-bold text-lg hover:bg-opacity-90 transition-all flex items-center justify-center">
+                                <i class="fas fa-download mr-3"></i>Télécharger le Programme (PDF)
                             </button>
                         </div>
                     </div>
-                    <div class="p-6 overflow-y-auto flex-1">
-                        <div class="grid md:grid-cols-2 gap-6">
-                            <div>
-                                <h3 class="font-bold text-lg text-enstp-navy mb-4 flex items-center">
-                                    <i class="fas fa-book mr-2 text-enstp-gold"></i>Cours Magistraux (Cours)
-                                </h3>
-                                <div id="uniCoursesList" class="pdf-list space-y-2">
-                                    <!-- Populated dynamically -->
-                                </div>
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-lg text-enstp-navy mb-4 flex items-center">
-                                    <i class="fas fa-tasks mr-2 text-enstp-blue"></i>Travaux Dirigés (TD)
-                                </h3>
-                                <div id="uniTDList" class="pdf-list space-y-2">
-                                    <!-- Populated dynamically -->
-                                </div>
-                            </div>
-                        </div>
-                        <div class="mt-6 p-4 bg-enstp-cream rounded-xl">
-                            <p class="text-sm text-gray-700">
-                                <i class="fas fa-info-circle mr-2 text-enstp-gold"></i>
-                                Cliquez sur un fichier pour le visualiser ou le télécharger. Les fichiers PDF doivent être placés dans le dossier <code>pdf/[universite]/</code>
-                            </p>
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- LIBRARY SECTION -->
         <section id="library-section" class="hidden py-16 bg-enstp-gray">
@@ -835,7 +1466,7 @@
             </div>
         </section>
 
-        <!-- VIDEOS SECTION -->
+        <!-- VIDEOS SECTION - REDESIGNED -->
         <section id="videos-section" class="hidden py-16 bg-enstp-gray">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-12">
@@ -843,156 +1474,21 @@
                     <p class="text-gray-600">Cours et tutoriels sur la méthode des éléments finis</p>
                 </div>
 
-                <!-- Search -->
-                <div class="bg-white rounded-2xl shadow-lg p-6 mb-8 border border-gray-100">
-                    <div class="flex flex-col md:flex-row gap-4">
-                        <div class="flex-1 relative">
-                            <i class="fas fa-search absolute left-4 top-3.5 text-gray-400"></i>
-                            <input type="text" placeholder="Rechercher une vidéo..." class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
-                        </div>
-                        <select class="px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
-                            <option>Toutes les catégories</option>
-                            <option>Introduction MEF</option>
-                            <option>Éléments 1D</option>
-                            <option>Éléments 2D</option>
-                            <option>Applications pratiques</option>
-                        </select>
-                    </div>
+                <!-- Categories Grid -->
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12" id="videoCategories">
+                    <!-- Populated by JavaScript -->
                 </div>
 
-                <!-- Videos Grid -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="videosGrid">
-                    <!-- Videos populated by JavaScript -->
-                </div>
-            </div>
-        </section>
-
-        <!-- TD SECTION -->
-        <section id="td-section" class="hidden py-16 bg-enstp-gray">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-12">
-                    <div>
-                        <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-2">Travaux Dirigés</h2>
-                        <p class="text-gray-600">Séries complètes avec solutions détaillées (PDF)</p>
+                <!-- Videos List -->
+                <div id="videosList" class="hidden">
+                    <div class="flex items-center justify-between mb-6">
+                        <button onclick="showVideoCategories()" class="px-4 py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy font-semibold hover:bg-enstp-navy hover:text-white transition-all">
+                            <i class="fas fa-arrow-left mr-2"></i>Retour aux catégories
+                        </button>
+                        <h3 class="font-bold text-xl text-enstp-navy" id="currentVideoCategory">Catégorie</h3>
                     </div>
-                    
-                    <div class="mt-6 md:mt-0 bg-white rounded-full p-1 shadow-lg border border-gray-200">
-                        <button onclick="switchSemester('s3')" id="btn-s3" class="px-8 py-3 rounded-full font-semibold transition-all bg-enstp-navy text-white shadow-md">Semestre 03</button>
-                        <button onclick="switchSemester('s4')" id="btn-s4" class="px-8 py-3 rounded-full font-semibold transition-all text-gray-600 hover:text-enstp-navy">Semestre 04</button>
-                    </div>
-                </div>
-
-                <div id="semester3-content" class="space-y-6">
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-enstp-navy text-white flex items-center justify-center font-bold text-xl">01</div>
-                                <span class="px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold">Complété</span>
-                            </div>
-                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Éléments Barres et Ressorts</h3>
-                            <p class="text-gray-600 text-sm mb-4">Introduction aux éléments finis unidimensionnels</p>
-                            <div class="grid grid-cols-2 gap-3">
-                                <button onclick="openPDF('td/TD01_Sujet.pdf', 'TD 01 - Sujet')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
-                                </button>
-                                <button onclick="openPDF('td/TD01_Solution.pdf', 'TD 01 - Solution')" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white">
-                                    <i class="fas fa-lightbulb mr-2"></i>Solution
-                                </button>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-enstp-blue text-white flex items-center justify-center font-bold text-xl">02</div>
-                                <span class="px-3 py-1 rounded-full bg-yellow-100 text-yellow-700 text-xs font-bold">En cours</span>
-                            </div>
-                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Barres en Treillis</h3>
-                            <p class="text-gray-600 text-sm mb-4">Structures réticulées planes et spatiales</p>
-                            <div class="grid grid-cols-2 gap-3">
-                                <button onclick="openPDF('td/TD02_Sujet.pdf', 'TD 02 - Sujet')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                                    <i class="fas fa-file-pdf mr-2"></i>PDF Sujet
-                                </button>
-                                <button onclick="openPDF('td/TD02_Solution.pdf', 'TD 02 - Solution')" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white">
-                                    <i class="fas fa-lightbulb mr-2"></i>Solution
-                                </button>
-                            </div>
-                        </div>
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
-                            <div class="flex items-start justify-between mb-4">
-                                <div class="w-12 h-12 rounded-xl bg-gray-400 text-white flex items-center justify-center font-bold text-xl">03</div>
-                                <span class="px-3 py-1 rounded-full bg-gray-100 text-gray-600 text-xs font-bold">Verrouillé</span>
-                            </div>
-                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Éléments Poutres</h3>
-                            <p class="text-gray-600 text-sm mb-4">Flexion et moment fléchissant</p>
-                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">
-                                <i class="fas fa-lock mr-2"></i>Complétez TD 02
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <div id="semester4-content" class="hidden space-y-6">
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 opacity-60">
-                            <div class="w-12 h-12 rounded-xl bg-orange-600 text-white flex items-center justify-center font-bold text-xl mb-4">01</div>
-                            <h3 class="font-bold text-xl text-enstp-navy mb-2">Structures 2D</h3>
-                            <button class="w-full py-2 rounded-lg bg-gray-100 text-gray-400 text-sm font-semibold cursor-not-allowed">Bientôt disponible</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- HOMEWORK SECTION -->
-        <section id="homework-section" class="hidden py-16 bg-enstp-gray">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-8">Devoirs Maison</h2>
-                <div class="grid md:grid-cols-2 gap-6">
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
-                        <div class="flex items-center justify-between mb-4">
-                            <span class="px-3 py-1 rounded-full bg-red-100 text-red-700 text-xs font-bold">À rendre: 15/02/2025</span>
-                            <span class="text-2xl font-bold text-enstp-gold">DM 01</span>
-                        </div>
-                        <h3 class="font-bold text-lg mb-2">Analyse d'un portique simple</h3>
-                        <p class="text-gray-600 text-sm mb-4">Application de la MEF sur une structure 2D à 3 éléments barres</p>
-                        <div class="flex gap-3">
-                            <button onclick="openPDF('devoirs/DM01.pdf', 'DM 01 - Sujet')" class="flex-1 py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                                <i class="fas fa-download mr-2"></i>Sujet PDF
-                            </button>
-                            <button class="flex-1 py-2 rounded-lg border-2 border-enstp-gold text-enstp-gold text-sm font-semibold hover:bg-enstp-gold hover:text-white">
-                                <i class="fas fa-upload mr-2"></i>Rendre
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- PROGRAM SECTION -->
-        <section id="program-section" class="hidden py-16 bg-enstp-gray">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-8 text-center">Programme Pédagogique 📃</h2>
-                <div class="space-y-8">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                        <div class="flex items-center justify-between mb-6">
-                            <h3 class="font-bold text-2xl text-enstp-navy">Semestre 03</h3>
-                            <span class="px-4 py-2 rounded-full bg-green-100 text-green-700 text-sm font-bold">En cours</span>
-                        </div>
-                        <div class="space-y-4">
-                            <div class="flex items-start space-x-4 p-6 bg-enstp-cream rounded-xl border-l-4 border-enstp-gold">
-                                <div class="w-10 h-10 rounded-full bg-enstp-navy text-white flex items-center justify-center font-bold">1</div>
-                                <div>
-                                    <h4 class="font-bold text-lg text-enstp-navy">Introduction à la Méthode des Éléments Finis</h4>
-                                    <p class="text-gray-600 mt-2">Historique, classification des problèmes, étapes de la MEF</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-4 p-6 bg-enstp-cream rounded-xl border-l-4 border-enstp-blue">
-                                <div class="w-10 h-10 rounded-full bg-enstp-blue text-white flex items-center justify-center font-bold">2</div>
-                                <div>
-                                    <h4 class="font-bold text-lg text-enstp-navy">Éléments Finis Unidimensionnels</h4>
-                                    <p class="text-gray-600 mt-2">Éléments barres, ressorts et poutres</p>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6" id="videosGrid">
+                        <!-- Videos populated by JavaScript -->
                     </div>
                 </div>
             </div>
@@ -1057,55 +1553,132 @@
             </div>
         </section>
 
-        <!-- CONTACT SECTION -->
+        <!-- CONTACT SECTION - REDESIGNED -->
         <section id="contact-section" class="hidden py-16 bg-enstp-gray">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-8 text-center">Contact 📞</h2>
-                <div class="grid md:grid-cols-2 gap-12 max-w-5xl mx-auto">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                        <h3 class="font-bold text-xl mb-6">Informations</h3>
-                        <div class="space-y-6">
-                            <div class="flex items-start space-x-4">
-                                <div class="w-12 h-12 rounded-xl bg-enstp-gold/10 flex items-center justify-center text-enstp-gold">
-                                    <i class="fas fa-university text-xl"></i>
-                                </div>
-                                <div class="trilingual-name">
-                                    <div class="fr font-serif font-bold text-enstp-navy">École Nationale Supérieure des Travaux Publics</div>
-                                    <div class="ar font-arabic text-enstp-gold font-semibold my-1">المدرسة الوطنية العليا للأشغال العمومية</div>
-                                    <div class="en text-gray-500 text-sm">Higher National School of Public Works</div>
-                                    <p class="text-gray-600 text-sm mt-2">1, Rue Sidi Garidi, Kouba, Algiers</p>
-                                </div>
+                <div class="text-center mb-12">
+                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Contact 📞</h2>
+                    <p class="text-gray-600">Responsables de la matière MEF</p>
+                </div>
+
+                <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+                    <!-- Dr. Assas Taqiyeddine -->
+                    <div class="contact-card">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-enstp-navy to-enstp-blue flex items-center justify-center text-white text-2xl font-bold">
+                                TA
                             </div>
-                            <div class="flex items-start space-x-4">
-                                <div class="w-12 h-12 rounded-xl bg-enstp-blue/10 flex items-center justify-center text-enstp-blue">
-                                    <i class="fas fa-chalkboard-teacher text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-enstp-navy">Dr. Assas Taqiyeddine</h4>
-                                    <p class="text-gray-500 text-sm">Responsable des TD</p>
-                                    <p class="text-gray-500 text-sm">t.assas@enstp.edu.dz</p>
-                                </div>
-                            </div>
-                            <div class="flex items-start space-x-4">
-                                <div class="w-12 h-12 rounded-xl bg-purple-100 flex items-center justify-center text-purple-600">
-                                    <i class="fas fa-user-tie text-xl"></i>
-                                </div>
-                                <div>
-                                    <h4 class="font-semibold text-enstp-navy">Mme Mehiaoui Hadjebar</h4>
-                                    <p class="text-gray-500 text-sm">Responsable du Cours</p>
-                                    <p class="text-gray-500 text-sm">h.mehiaoui@enstp.edu.dz</p>
-                                </div>
+                            <div>
+                                <h3 class="font-bold text-2xl text-enstp-navy">Dr. Assas Taqiyeddine</h3>
+                                <p class="text-enstp-gold font-semibold">Responsable des TD</p>
                             </div>
                         </div>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center space-x-3 text-gray-700">
+                                <i class="fas fa-envelope text-enstp-gold w-5"></i>
+                                <span>taqiyeddine.assas@univ-biskra.dz</span>
+                            </div>
+                            <div class="flex items-center space-x-3 text-gray-700">
+                                <i class="fas fa-phone text-enstp-gold w-5"></i>
+                                <span>0670876131</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://scholar.google.com/scholar?hl=fr&q=assas+taqiyeddine" target="_blank" class="social-link bg-blue-50 text-blue-600 hover:bg-blue-100">
+                                <i class="fas fa-graduation-cap scholar-icon"></i>
+                                Google Scholar
+                            </a>
+                            <a href="https://www.researchgate.net/profile/Taqiyeddine-Assas" target="_blank" class="social-link bg-teal-50 text-teal-600 hover:bg-teal-100">
+                                <i class="fab fa-researchgate researchgate-icon"></i>
+                                ResearchGate
+                            </a>
+                            <a href="https://orcid.org/0009-0001-4288-2908" target="_blank" class="social-link bg-green-50 text-green-600 hover:bg-green-100">
+                                <i class="fas fa-id-badge orcid-icon"></i>
+                                ORCID
+                            </a>
+                        </div>
                     </div>
+
+                    <!-- Mme Mehiaoui Hadjebar -->
+                    <div class="contact-card">
+                        <div class="flex items-center space-x-4 mb-6">
+                            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-enstp-gold to-yellow-500 flex items-center justify-center text-white text-2xl font-bold">
+                                MM
+                            </div>
+                            <div>
+                                <h3 class="font-bold text-2xl text-enstp-navy">Mme Mehiaoui Hadjebar</h3>
+                                <p class="text-enstp-gold font-semibold">Responsable du Cours</p>
+                                <p class="text-sm text-gray-500">DIB - Génie Civil</p>
+                            </div>
+                        </div>
+                        
+                        <div class="space-y-4 mb-6">
+                            <div class="flex items-center space-x-3 text-gray-700">
+                                <i class="fas fa-envelope text-enstp-gold w-5"></i>
+                                <span>m.mahiaoui@enstp.edu.dz</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-wrap gap-3">
+                            <a href="https://scholar.google.com/scholar?hl=fr&q=Mahdia+Yasmina+Mehiaoui" target="_blank" class="social-link bg-blue-50 text-blue-600 hover:bg-blue-100">
+                                <i class="fas fa-graduation-cap scholar-icon"></i>
+                                Google Scholar
+                            </a>
+                            <a href="https://www.researchgate.net/profile/Mahdia-Mehiaoui" target="_blank" class="social-link bg-teal-50 text-teal-600 hover:bg-teal-100">
+                                <i class="fab fa-researchgate researchgate-icon"></i>
+                                ResearchGate
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- School Info -->
+                <div class="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-gray-100 max-w-4xl mx-auto">
+                    <div class="text-center mb-6">
+                        <div class="trilingual-name mb-4">
+                            <div class="ar font-arabic text-2xl text-enstp-gold font-bold mb-2">المدرسة الوطنية العليا للأشغال العمومية</div>
+                            <div class="fr font-serif text-xl text-enstp-navy font-bold">École Nationale Supérieure des Travaux Publics</div>
+                            <div class="en text-gray-600 mt-1">National Higher School of Public Works</div>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-3 gap-6 text-center">
+                        <div class="p-4 bg-enstp-cream rounded-xl">
+                            <i class="fas fa-map-marker-alt text-2xl text-enstp-gold mb-2"></i>
+                            <p class="text-sm font-semibold">1, Rue Sidi Garidi<br>Kouba, Alger</p>
+                        </div>
+                        <div class="p-4 bg-enstp-cream rounded-xl">
+                            <i class="fas fa-envelope text-2xl text-enstp-gold mb-2"></i>
+                            <p class="text-sm font-semibold">contact@enstp.edu.dz</p>
+                        </div>
+                        <div class="p-4 bg-enstp-cream rounded-xl">
+                            <i class="fas fa-globe text-2xl text-enstp-gold mb-2"></i>
+                            <p class="text-sm font-semibold">www.enstp.edu.dz</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Form -->
+                <div class="mt-12 max-w-2xl mx-auto">
                     <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                        <h3 class="font-bold text-xl mb-6">Envoyer un message</h3>
+                        <h3 class="font-bold text-xl mb-6 text-center">Envoyer un message</h3>
                         <form class="space-y-4" onsubmit="event.preventDefault(); alert('Message envoyé !');">
-                            <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Nom complet">
-                            <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Email">
-                            <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Message"></textarea>
-                            <button type="submit" class="w-full py-3 rounded-xl bg-enstp-navy text-white font-semibold hover:bg-opacity-90">
-                                <i class="fas fa-paper-plane mr-2"></i>Envoyer
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Nom" required>
+                                <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Prénom" required>
+                            </div>
+                            <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Email" required>
+                            <select class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                                <option>Destinataire</option>
+                                <option>Dr. Assas Taqiyeddine (Responsable TD)</option>
+                                <option>Mme Mehiaoui Hadjebar (Responsable Cours)</option>
+                                <option>Administration ENSTP</option>
+                            </select>
+                            <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Votre message..." required></textarea>
+                            <button type="submit" class="w-full py-4 rounded-xl bg-enstp-navy text-white font-bold hover:bg-opacity-90 transition-all">
+                                <i class="fas fa-paper-plane mr-2"></i>Envoyer le message
                             </button>
                         </form>
                     </div>
@@ -1141,6 +1714,8 @@
                         <ul class="space-y-3 text-gray-400">
                             <li><a href="#" onclick="showSection('home')" class="hover:text-white transition-colors">Accueil</a></li>
                             <li><a href="#" onclick="showSection('courses')" class="hover:text-white transition-colors">Cours</a></li>
+                            <li><a href="#" onclick="showSection('td')" class="hover:text-white transition-colors">TD</a></li>
+                            <li><a href="#" onclick="showSection('tp')" class="hover:text-white transition-colors">TP</a></li>
                             <li><a href="#" onclick="showSection('exams')" class="hover:text-white transition-colors">Examens</a></li>
                             <li><a href="#" onclick="showSection('ai-lab')" class="hover:text-white transition-colors">AI Lab</a></li>
                         </ul>
@@ -1166,39 +1741,135 @@
         </footer>
     </main>
 
+    <!-- PDF VIEWER MODAL -->
+    <div id="pdfModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" onclick="closePDFModal()"></div>
+        <div class="absolute inset-4 bg-white rounded-3xl shadow-2xl overflow-hidden flex flex-col">
+            <div class="bg-enstp-navy text-white p-4 flex justify-between items-center">
+                <h3 id="pdfModalTitle" class="font-bold text-lg">Visualisation du PDF</h3>
+                <button onclick="closePDFModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="flex-1 overflow-hidden" id="pdfViewerContainer">
+                <iframe id="pdfViewer" class="w-full h-full border-0"></iframe>
+            </div>
+            <div class="bg-gray-50 p-4 flex justify-between items-center">
+                <span id="pdfFileName" class="text-sm text-gray-600"></span>
+                <a id="pdfDownloadLink" href="#" download class="px-6 py-2 bg-enstp-gold text-enstp-navy rounded-xl font-semibold hover:bg-opacity-90 transition-all">
+                    <i class="fas fa-download mr-2"></i>Télécharger
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- UNIVERSITY PDF MODAL -->
+    <div id="universityPDFModal" class="fixed inset-0 z-50 hidden">
+        <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="closeUniversityPDFModal()"></div>
+        <div class="absolute inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden shadow-2xl flex flex-col">
+                <div id="universityPDFHeader" class="bg-gradient-to-r from-enstp-navy to-enstp-blue p-6 text-white">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 id="uniPDFTitle" class="text-2xl font-bold mb-2">Université</h2>
+                            <p id="uniPDFSubtitle" class="text-enstp-gold">Cours et TD disponibles</p>
+                        </div>
+                        <button onclick="closeUniversityPDFModal()" class="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center hover:bg-white/30 transition-colors">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="p-6 overflow-y-auto flex-1">
+                    <div class="grid md:grid-cols-2 gap-6">
+                        <div>
+                            <h3 class="font-bold text-lg text-enstp-navy mb-4 flex items-center">
+                                <i class="fas fa-book mr-2 text-enstp-gold"></i>Cours Magistraux (Cours)
+                            </h3>
+                            <div id="uniCoursesList" class="pdf-list space-y-2">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-lg text-enstp-navy mb-4 flex items-center">
+                                <i class="fas fa-tasks mr-2 text-enstp-blue"></i>Travaux Dirigés (TD)
+                            </h3>
+                            <div id="uniTDList" class="pdf-list space-y-2">
+                                <!-- Populated dynamically -->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-6 p-4 bg-enstp-cream rounded-xl">
+                        <p class="text-sm text-gray-700">
+                            <i class="fas fa-info-circle mr-2 text-enstp-gold"></i>
+                            Cliquez sur un fichier pour le visualiser ou le télécharger. Les fichiers PDF doivent être placés dans le dossier <code>pdf/[universite]/</code>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Data des universités avec structure de fichiers PDF
         const universitiesData = [
             { 
-                name: "Universitaire d’Ain Témouchent", 
-                fullName: "Universitaire d’Ain Témouchent", 
-                city: "Ain Témouchen", 
+                name: "ENSTP", 
+                fullName: "École Nationale Supérieure des Travaux Publics", 
+                city: "Alger", 
+                exams: 45, 
+                courses: 20, 
+                color: "from-enstp-navy to-enstp-blue", 
+                region: "algiers",
+                pdfPath: "pdf/enstp/",
+                examFiles: [
+                    { name: "Examen S3 2024", file: "examen_s3_2024.pdf" },
+                    { name: "Examen S3 2023", file: "examen_s3_2023.pdf" },
+                    { name: "Examen S4 2024", file: "examen_s4_2024.pdf" },
+                    { name: "Examen S4 2023", file: "examen_s4_2023.pdf" }
+                ],
+                courseFiles: [
+                    { name: "Cours Complet MEF", file: "cours_complet.pdf" },
+                    { name: "Matrice de Rigidité", file: "matrice_rigidite.pdf" }
+                ],
+                tdFiles: [
+                    { name: "TD 01", file: "td01.pdf" },
+                    { name: "TD 02", file: "td02.pdf" }
+                ]
+            },
+            { 
+                name: "Université d'Ain Témouchent", 
+                fullName: "Université d'Ain Témouchent", 
+                city: "Ain Témouchent", 
                 exams: 32, 
                 courses: 15, 
                 color: "from-blue-600 to-blue-800", 
                 region: "algiers",
-                pdfPath: "pdf/Ain Témouchen/",
+                pdfPath: "pdf/ain_temouchent/",
+                examFiles: [
+                    { name: "Examen MEF 2024", file: "examen_mef_2024.pdf" },
+                    { name: "Examen MEF 2023", file: "examen_mef_2023.pdf" }
+                ],
                 courseFiles: [
-                    { name: "[COURS ET APPLICATIONS DE LA METHODE DES ELEMENTS FINIS]", file: "cours.pdf" },
-                
+                    { name: "Cours et Applications MEF", file: "cours_applications.pdf" }
                 ],
                 tdFiles: [
-                    { name: "Série TD ", file: "td01_barres.pdf" },
-                    
+                    { name: "Série TD 01", file: "td01.pdf" }
                 ]
             },
             { 
                 name: "Université de Relizane", 
-                fullName: "Faculté des sciences et techniques Département de Génie Civil", 
+                fullName: "Faculté des sciences et techniques - Département Génie Civil", 
                 city: "Relizane", 
                 exams: 18, 
                 courses: 8, 
                 color: "from-green-600 to-green-800", 
                 region: "algiers",
-                pdfPath: "pdf/Relizane/",
+                pdfPath: "pdf/relizane/",
+                examFiles: [
+                    { name: "Examen Principal 2024", file: "examen_principal_2024.pdf" }
+                ],
                 courseFiles: [
-                    { name: "Méthode des éléments finis Cours et exercices corrigés", file: "intro_mef.pdf" },
-                    
+                    { name: "Méthode des éléments finis - Cours et exercices", file: "cours_exercices.pdf" }
                 ],
                 tdFiles: [
                     { name: "TD - Structures", file: "td_structures.pdf" }
@@ -1213,45 +1884,15 @@
                 color: "from-purple-600 to-purple-800", 
                 region: "algiers",
                 pdfPath: "pdf/enp/",
+                examFiles: [
+                    { name: "Examen S3 2024", file: "examen_s3_2024.pdf" }
+                ],
                 courseFiles: [
-                    { name: "Cours Complet MEF", file: "cours_complet.pdf" },
-                    { name: "Matrice de Rigidité", file: "matrice_rigidite.pdf" }
+                    { name: "Cours Complet MEF", file: "cours_complet.pdf" }
                 ],
                 tdFiles: [
                     { name: "TD 01", file: "td01.pdf" },
                     { name: "TD 02", file: "td02.pdf" }
-                ]
-            },
-            { 
-                name: "ENAU", 
-                fullName: "École Nationale d'Architecture et d'Urbanisme", 
-                city: "Alger", 
-                exams: 15, 
-                courses: 12, 
-                color: "from-teal-600 to-teal-800", 
-                region: "algiers",
-                pdfPath: "pdf/enau/",
-                courseFiles: [
-                    { name: "MEF pour Architectes", file: "mef_archi.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Applications", file: "td_applications.pdf" }
-                ]
-            },
-            { 
-                name: "UMMTO", 
-                fullName: "Université Mouloud Mammeri", 
-                city: "Tizi Ouzou", 
-                exams: 22, 
-                courses: 10, 
-                color: "from-red-600 to-red-800", 
-                region: "algiers",
-                pdfPath: "pdf/ummto/",
-                courseFiles: [
-                    { name: "Cours MEF Tizi Ouzou", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "Série TD 01", file: "serie_td01.pdf" }
                 ]
             },
             { 
@@ -1263,29 +1904,14 @@
                 color: "from-orange-600 to-orange-800", 
                 region: "constantine",
                 pdfPath: "pdf/uc/",
+                examFiles: [
+                    { name: "Examen MEF 2024", file: "examen_mef_2024.pdf" }
+                ],
                 courseFiles: [
-                    { name: "Cours MEF Constantine", file: "cours_mef.pdf" },
-                    { name: "Rappels Mathématiques", file: "rappels maths.pdf" }
+                    { name: "Cours MEF Constantine", file: "cours_mef.pdf" }
                 ],
                 tdFiles: [
-                    { name: "TD 01", file: "td01.pdf" },
-                    { name: "TD 02", file: "td02.pdf" }
-                ]
-            },
-            { 
-                name: "UMC", 
-                fullName: "Université Mentouri Constantine", 
-                city: "Constantine", 
-                exams: 30, 
-                courses: 16, 
-                color: "from-yellow-600 to-yellow-800", 
-                region: "constantine",
-                pdfPath: "pdf/umc/",
-                courseFiles: [
-                    { name: "Cours MEF", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Structuraux", file: "td_structuraux.pdf" }
+                    { name: "TD 01", file: "td01.pdf" }
                 ]
             },
             { 
@@ -1297,218 +1923,44 @@
                 color: "from-indigo-600 to-indigo-800", 
                 region: "oran",
                 pdfPath: "pdf/usto/",
+                examFiles: [
+                    { name: "Examen MEF 2024", file: "examen_mef_2024.pdf" }
+                ],
                 courseFiles: [
                     { name: "Cours MEF Oran", file: "cours_mef.pdf" }
                 ],
                 tdFiles: [
                     { name: "TD 01", file: "td01.pdf" }
                 ]
-            },
-            { 
-                name: "UoB", 
-                fullName: "Université d'Oran 1", 
-                city: "Oran", 
-                exams: 20, 
-                courses: 12, 
-                color: "from-pink-600 to-pink-800", 
-                region: "oran",
-                pdfPath: "pdf/uob/",
-                courseFiles: [
-                    { name: "Cours MEF", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Exercices", file: "td_exercices.pdf" }
-                ]
-            },
-            { 
-                name: "UFAS", 
-                fullName: "Université Ferhat Abbas", 
-                city: "Sétif", 
-                exams: 24, 
-                courses: 13, 
-                color: "from-cyan-600 to-cyan-800", 
-                region: "other",
-                pdfPath: "pdf/ufas/",
-                courseFiles: [
-                    { name: "Cours MEF Sétif", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Pratiques", file: "td_pratiques.pdf" }
-                ]
-            },
-            { 
-                name: "UAB", 
-                fullName: "Université Abou Bekr Belkaïd", 
-                city: "Tlemcen", 
-                exams: 19, 
-                courses: 11, 
-                color: "from-emerald-600 to-emerald-800", 
-                region: "other",
-                pdfPath: "pdf/uab/",
-                courseFiles: [
-                    { name: "Cours MEF Tlemcen", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Applications", file: "td_applications.pdf" }
-                ]
-            },
-            { 
-                name: "UMK", 
-                fullName: "Université Mohamed Khider", 
-                city: "Biskra", 
-                exams: 15, 
-                courses: 9, 
-                color: "from-lime-600 to-lime-800", 
-                region: "other",
-                pdfPath: "pdf/umk/",
-                courseFiles: [
-                    { name: "Cours MEF Biskra", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Exercices", file: "td_exercices.pdf" }
-                ]
-            },
-            { 
-                name: "UMA", 
-                fullName: "Université de Mostaganem", 
-                city: "Mostaganem", 
-                exams: 16, 
-                courses: 10, 
-                color: "from-amber-600 to-amber-800", 
-                region: "other",
-                pdfPath: "pdf/uma/",
-                courseFiles: [
-                    { name: "Cours MEF Mostaganem", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Série 01", file: "td_serie01.pdf" }
-                ]
-            },
-            { 
-                name: "UBMA", 
-                fullName: "Université Badji Mokhtar", 
-                city: "Annaba", 
-                exams: 21, 
-                courses: 12, 
-                color: "from-rose-600 to-rose-800", 
-                region: "other",
-                pdfPath: "pdf/ubma/",
-                courseFiles: [
-                    { name: "Cours MEF Annaba", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Applications", file: "td_applications.pdf" }
-                ]
-            },
-            { 
-                name: "UMBB", 
-                fullName: "Université M'hamed Bougara", 
-                city: "Boumerdès", 
-                exams: 26, 
-                courses: 15, 
-                color: "from-violet-600 to-violet-800", 
-                region: "algiers",
-                pdfPath: "pdf/umbb/",
-                courseFiles: [
-                    { name: "Cours MEF Boumerdès", file: "cours_mef.pdf" },
-                    { name: "Formulaire", file: "formulaire.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD 01", file: "td01.pdf" },
-                    { name: "TD 02", file: "td02.pdf" }
-                ]
-            },
-            { 
-                name: "USDB", 
-                fullName: "Université Saad Dahleb", 
-                city: "Blida", 
-                exams: 23, 
-                courses: 14, 
-                color: "from-sky-600 to-sky-800", 
-                region: "algiers",
-                pdfPath: "pdf/usdb/",
-                courseFiles: [
-                    { name: "Cours MEF Blida", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Exercices", file: "td_exercices.pdf" }
-                ]
-            },
-            { 
-                name: "UHL", 
-                fullName: "Université Hassiba Ben Bouali", 
-                city: "Chlef", 
-                exams: 17, 
-                courses: 10, 
-                color: "from-slate-600 to-slate-800", 
-                region: "other",
-                pdfPath: "pdf/uhl/",
-                courseFiles: [
-                    { name: "Cours MEF Chlef", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Pratiques", file: "td_pratiques.pdf" }
-                ]
-            },
-            { 
-                name: "UJIK", 
-                fullName: "Université Jijel", 
-                city: "Jijel", 
-                exams: 14, 
-                courses: 8, 
-                color: "from-fuchsia-600 to-fuchsia-800", 
-                region: "other",
-                pdfPath: "pdf/ujik/",
-                courseFiles: [
-                    { name: "Cours MEF Jijel", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Applications", file: "td_applications.pdf" }
-                ]
-            },
-            { 
-                name: "UTM", 
-                fullName: "Université Tissemsilt", 
-                city: "Tissemsilt", 
-                exams: 11, 
-                courses: 7, 
-                color: "from-zinc-600 to-zinc-800", 
-                region: "other",
-                pdfPath: "pdf/utm/",
-                courseFiles: [
-                    { name: "Cours MEF Tissemsilt", file: "cours_mef.pdf" }
-                ],
-                tdFiles: [
-                    { name: "TD Exercices", file: "td_exercices.pdf" }
-                ]
             }
+        ];
+
+        // Video Categories Data
+        const videoCategories = [
+            { id: 'ressorts', name: 'Éléments ressorts', icon: 'fa-compress-arrows-alt', color: 'from-blue-500 to-blue-700', count: 5 },
+            { id: 'barres', name: 'Éléments barres', icon: 'fa-minus', color: 'from-green-500 to-green-700', count: 8 },
+            { id: 'treillis', name: 'Éléments barres en treillis', icon: 'fa-project-diagram', color: 'from-purple-500 to-purple-700', count: 6 },
+            { id: 'poutres', name: 'Éléments poutres', icon: 'fa-grip-lines', color: 'from-orange-500 to-orange-700', count: 7 },
+            { id: '2d', name: 'Structures 2D – États plans', icon: 'fa-square', color: 'from-red-500 to-red-700', count: 4 },
+            { id: 'transformation', name: 'Transformation géométrique et fonctions de forme', icon: 'fa-shapes', color: 'from-teal-500 to-teal-700', count: 5 },
+            { id: 'isoparametrique', name: 'Formulation isoparamétrique', icon: 'fa-cube', color: 'from-indigo-500 to-indigo-700', count: 6 }
         ];
 
         const booksData = [
             { title: "Méthode des Éléments Finis - Tome 1", author: "Gouri Dhatt & Gilbert Touzot", uni: "ENSTP", type: "Référence principale", color: "from-enstp-navy to-enstp-blue", file: "books/dhatt_touzot_tome1.pdf" },
             { title: "Finite Element Procedures", author: "K.J. Bathe", uni: "USTHB", type: "Edition MIT", color: "from-blue-600 to-blue-800", file: "books/bathe_fem.pdf" },
             { title: "The Finite Element Method", author: "O.C. Zienkiewicz", uni: "ENP", type: "7th Edition", color: "from-purple-600 to-purple-800", file: "books/zienkiewicz_fem.pdf" },
-            { title: "Programming the FEM in MATLAB", author: "G.R. Liu", uni: "Polytechnique", type: "Avec codes sources", color: "from-green-600 to-green-800", file: "books/liu_matlab.pdf" },
-            { title: "Formulaire MEF Complet", author: "Dr. Ahmed Benyagoub", uni: "ENSTP", type: "Résumé des formules", color: "from-enstp-gold to-yellow-600", file: "books/formulaire_mef.pdf" },
-            { title: "Introduction to FEM", author: "J.N. Reddy", uni: "UC", type: "McGraw-Hill", color: "from-orange-600 to-orange-800", file: "books/reddy_intro.pdf" }
-        ];
-
-        const videosData = [
-            { title: "Introduction complète à la Méthode des Éléments Finis", channel: "ENSTP Officiel", views: "12.5k", duration: "24:35", thumbnail: "bg-enstp-navy" },
-            { title: "Matrice de rigidité - Éléments Barres", channel: "Dr. Assas", views: "8.3k", duration: "18:42", thumbnail: "bg-enstp-blue" },
-            { title: "Assemblage des matrices - Exemple pratique", channel: "USTHB", views: "15.7k", duration: "32:15", thumbnail: "bg-blue-600" },
-            { title: "Éléments finis pour les poutres", channel: "Mme Mehiaoui", views: "6.2k", duration: "28:20", thumbnail: "bg-purple-600" },
-            { title: "Simulation 3D avec ANSYS", channel: "ENP Alger", views: "22.1k", duration: "45:00", thumbnail: "bg-green-600" },
-            { title: "Résolution de systèmes - Gauss", channel: "Prof. Benkhedda", views: "9.8k", duration: "19:45", thumbnail: "bg-orange-600" }
+            { title: "Programming the FEM in MATLAB", author: "G.R. Liu", uni: "Polytechnique", type: "Avec codes sources", color: "from-green-600 to-green-800", file: "books/liu_matlab.pdf" }
         ];
 
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
             initThreeJS();
+            populateExamsDropdown();
             populateExamsUniversities();
             populateCoursesUniversities();
+            populateVideoCategories();
             populateBooks();
-            populateVideos();
             initAttendanceTable();
             initGradesTable();
         });
@@ -1676,8 +2128,38 @@
             document.getElementById('universityPDFModal').classList.add('hidden');
         }
 
+        // Exams Dropdown
+        function populateExamsDropdown() {
+            const list = document.getElementById('examsDropdownList');
+            universitiesData.forEach(uni => {
+                const item = document.createElement('div');
+                item.className = 'dropdown-item';
+                item.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <span class="font-semibold">${uni.name}</span>
+                        <span class="text-xs text-gray-500">${uni.exams} examens</span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-1">${uni.city}</div>
+                `;
+                item.onclick = () => {
+                    showSection('exams');
+                    setTimeout(() => showUniversityPDFs(uni.name), 100);
+                };
+                list.appendChild(item);
+            });
+        }
+
         // Attendance - Editable Table
         let attendanceData = [];
+        const tdSessions = {
+            'TD01': 4,
+            'TD02': 4,
+            'TD03': 4,
+            'TD04': 4,
+            'TD05': 2,
+            'TD06': 2,
+            'TD07': 2
+        };
         
         function initAttendanceTable() {
             const tbody = document.getElementById('attendanceTableBody');
@@ -1688,6 +2170,7 @@
             for (let i = 1; i <= 5; i++) {
                 addStudentRow();
             }
+            updateAttendanceSessions();
         }
 
         function addStudentRow() {
@@ -1700,28 +2183,28 @@
                 <td class="p-3"><input type="text" placeholder="Matricule" class="w-full text-xs"></td>
                 <td class="p-3"><input type="text" placeholder="Nom" class="w-full"></td>
                 <td class="p-3"><input type="text" placeholder="Prénom" class="w-full"></td>
-                <td class="p-3 text-center">
+                <td class="p-3 text-center session-1">
                     <select onchange="updateAttendancePoints(this)" class="presence-select">
                         <option value="P" class="presence-present">P</option>
                         <option value="A" class="presence-absent">A</option>
                         <option value="J" class="presence-justified">J</option>
                     </select>
                 </td>
-                <td class="p-3 text-center">
+                <td class="p-3 text-center session-2">
                     <select onchange="updateAttendancePoints(this)" class="presence-select">
                         <option value="P" class="presence-present">P</option>
                         <option value="A" class="presence-absent">A</option>
                         <option value="J" class="presence-justified">J</option>
                     </select>
                 </td>
-                <td class="p-3 text-center">
+                <td class="p-3 text-center session-3">
                     <select onchange="updateAttendancePoints(this)" class="presence-select">
                         <option value="P" class="presence-present">P</option>
                         <option value="A" class="presence-absent">A</option>
                         <option value="J" class="presence-justified">J</option>
                     </select>
                 </td>
-                <td class="p-3 text-center">
+                <td class="p-3 text-center session-4">
                     <select onchange="updateAttendancePoints(this)" class="presence-select">
                         <option value="P" class="presence-present">P</option>
                         <option value="A" class="presence-absent">A</option>
@@ -1736,6 +2219,44 @@
             `;
             
             tbody.appendChild(row);
+            updateAttendanceSessions();
+        }
+
+        function updateAttendanceSessions() {
+            const tdSelect = document.getElementById('attTD');
+            const selectedTD = tdSelect.value;
+            const numSessions = tdSessions[selectedTD] || 4;
+            
+            const headers = document.querySelectorAll('#attendanceTable th');
+            const rows = document.querySelectorAll('#attendanceTableBody tr');
+            
+            // Update headers and cells visibility
+            for (let i = 1; i <= 4; i++) {
+                const sessionIndex = 4 + i; // Index of session columns
+                const show = i <= numSessions;
+                
+                if (headers[sessionIndex]) {
+                    headers[sessionIndex].style.display = show ? '' : 'none';
+                }
+                
+                rows.forEach(row => {
+                    const cell = row.querySelector(`.session-${i}`);
+                    if (cell) {
+                        if (!show) {
+                            cell.innerHTML = '<span class="text-gray-400">/</span>';
+                        } else if (cell.querySelector('select') === null) {
+                            cell.innerHTML = `
+                                <select onchange="updateAttendancePoints(this)" class="presence-select">
+                                    <option value="P" class="presence-present">P</option>
+                                    <option value="A" class="presence-absent">A</option>
+                                    <option value="J" class="presence-justified">J</option>
+                                </select>
+                            `;
+                        }
+                    }
+                });
+            }
+            
             updateAllAttendancePoints();
         }
 
@@ -1745,6 +2266,8 @@
 
         function updateAllAttendancePoints() {
             const rows = document.querySelectorAll('#attendanceTableBody tr');
+            const semester = document.getElementById('attSemester')?.value || 's3';
+            
             rows.forEach(row => {
                 const selects = row.querySelectorAll('.presence-select');
                 let absences = 0;
@@ -1767,7 +2290,6 @@
 
         function deleteRow(btn) {
             btn.closest('tr').remove();
-            // Re-number rows
             const rows = document.querySelectorAll('#attendanceTableBody tr');
             rows.forEach((row, index) => {
                 row.cells[0].textContent = index + 1;
@@ -1776,6 +2298,77 @@
 
         function saveAttendance() {
             alert('Présences enregistrées avec succès !');
+        }
+
+        function exportAttendancePDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header with trilingual names
+            doc.setFontSize(12);
+            doc.text('المدرسة الوطنية العليا للأشغال العمومية', 105, 20, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('École Nationale Supérieure des Travaux Publics', 105, 30, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text('National Higher School of Public Works', 105, 38, { align: 'center' });
+            
+            // Title
+            doc.setFontSize(16);
+            doc.text('Liste de Présence - MEF', 105, 50, { align: 'center' });
+            
+            // Info
+            const specialty = document.getElementById('attSpecialty')?.value || 'DIB';
+            const group = document.getElementById('attGroup')?.value || 'G01';
+            const td = document.getElementById('attTD')?.value || 'TD01';
+            const date = document.getElementById('attDate')?.value || new Date().toLocaleDateString();
+            const semester = document.getElementById('attSemester')?.value || 's3';
+            
+            doc.setFontSize(11);
+            doc.text(`Spécialité: ${specialty} | Groupe: ${group} | ${td} | Semestre: ${semester.toUpperCase()}`, 20, 65);
+            doc.text(`Date: ${date}`, 20, 72);
+            
+            // Table
+            const rows = document.querySelectorAll('#attendanceTableBody tr');
+            let y = 85;
+            
+            doc.setFontSize(9);
+            doc.text('N°', 20, y);
+            doc.text('Matricule', 35, y);
+            doc.text('Nom', 70, y);
+            doc.text('Prénom', 100, y);
+            doc.text('S1', 135, y);
+            doc.text('S2', 150, y);
+            doc.text('S3', 165, y);
+            doc.text('S4', 180, y);
+            doc.text('Abs', 195, y);
+            
+            y += 8;
+            
+            rows.forEach((row, idx) => {
+                const inputs = row.querySelectorAll('input');
+                const selects = row.querySelectorAll('select');
+                
+                doc.text(`${idx + 1}`, 20, y);
+                doc.text(inputs[0]?.value || '', 35, y);
+                doc.text(inputs[1]?.value || '', 70, y);
+                doc.text(inputs[2]?.value || '', 100, y);
+                
+                selects.forEach((sel, sIdx) => {
+                    const x = 135 + (sIdx * 15);
+                    if (sel.parentElement.querySelector('span')?.textContent === '/') {
+                        doc.text('/', x, y);
+                    } else {
+                        doc.text(sel.value, x, y);
+                    }
+                });
+                
+                const abs = row.querySelector('.absences-count')?.textContent || '0';
+                doc.text(abs, 195, y);
+                
+                y += 7;
+            });
+            
+            doc.save(`Presence_${specialty}_${group}_${semester}.pdf`);
         }
 
         // Grades - Editable Table
@@ -1787,6 +2380,7 @@
             for (let i = 1; i <= 5; i++) {
                 addGradeRow();
             }
+            updateTeacherInfo();
         }
 
         function addGradeRow() {
@@ -1836,7 +2430,6 @@
             const finalCell = row.querySelector('.final-grade');
             finalCell.textContent = final.toFixed(2);
             
-            // Color coding
             finalCell.className = 'p-3 font-bold final-grade ' + (final >= 10 ? 'text-green-600' : 'text-red-600');
             
             updateGradeStats();
@@ -1870,8 +2463,18 @@
             document.getElementById('statSuccess').textContent = Math.round((passed / finals.length) * 100) + '%';
         }
 
+        function updateTeacherInfo() {
+            const specialty = document.getElementById('gradeSpecialty')?.value || 'DIB';
+            const group = document.getElementById('gradeGroup')?.value || 'G01';
+            const semester = document.getElementById('gradeSemester')?.value || 's3';
+            
+            document.getElementById('infoSpecialty').textContent = specialty;
+            document.getElementById('infoGroup').textContent = group;
+            document.getElementById('infoTeacher').textContent = specialty === 'DIB' ? 'Mehiaoui Yasmina Mahdia' : 'Tounsi Khaled';
+            document.getElementById('gradesTableTitle').textContent = `${specialty} - ${group} - ${semester.toUpperCase()}`;
+        }
+
         function importFromAttendance() {
-            // Get attendance points from attendance table
             const attRows = document.querySelectorAll('#attendanceTableBody tr');
             const gradeRows = document.querySelectorAll('#gradesTableBody tr');
             
@@ -1891,8 +2494,120 @@
             alert('Notes enregistrées avec succès !');
         }
 
-        function exportToExcel() {
-            alert('Export Excel en cours...');
+        function exportGradesPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+            
+            // Header with trilingual names
+            doc.setFontSize(12);
+            doc.text('المدرسة الوطنية العليا للأشغال العمومية', 105, 20, { align: 'center' });
+            doc.setFontSize(14);
+            doc.text('École Nationale Supérieure des Travaux Publics', 105, 30, { align: 'center' });
+            doc.setFontSize(10);
+            doc.text('National Higher School of Public Works', 105, 38, { align: 'center' });
+            
+            // Title
+            doc.setFontSize(16);
+            doc.text('Relevé de Notes - MEF', 105, 50, { align: 'center' });
+            
+            // Info
+            const specialty = document.getElementById('gradeSpecialty')?.value || 'DIB';
+            const group = document.getElementById('gradeGroup')?.value || 'G01';
+            const semester = document.getElementById('gradeSemester')?.value || 's3';
+            const teacher = specialty === 'DIB' ? 'Mehiaoui Yasmina Mahdia' : 'Tounsi Khaled';
+            
+            doc.setFontSize(11);
+            doc.text(`Spécialité: ${specialty} | Groupe: ${group} | Semestre: ${semester.toUpperCase()}`, 20, 65);
+            doc.text(`Enseignant: ${teacher}`, 20, 72);
+            
+            // Table
+            const rows = document.querySelectorAll('#gradesTableBody tr');
+            let y = 85;
+            
+            doc.setFontSize(8);
+            doc.text('N°', 15, y);
+            doc.text('Mat.', 25, y);
+            doc.text('Nom', 50, y);
+            doc.text('Prénom', 80, y);
+            doc.text('Prés.', 110, y);
+            doc.text('Part.', 125, y);
+            doc.text('Int.', 140, y);
+            doc.text('Cours', 155, y);
+            doc.text('CC', 170, y);
+            doc.text('Exam.', 185, y);
+            doc.text('Moy.', 200, y);
+            
+            y += 6;
+            
+            rows.forEach((row, idx) => {
+                const inputs = row.querySelectorAll('input');
+                
+                doc.text(`${idx + 1}`, 15, y);
+                doc.text(inputs[0]?.value?.substring(0, 8) || '', 25, y);
+                doc.text(inputs[1]?.value?.substring(0, 10) || '', 50, y);
+                doc.text(inputs[2]?.value?.substring(0, 10) || '', 80, y);
+                doc.text(inputs[3]?.value || '', 110, y);
+                doc.text(inputs[4]?.value || '', 125, y);
+                doc.text(inputs[5]?.value || '', 140, y);
+                doc.text(inputs[6]?.value || '', 155, y);
+                
+                const cc = row.querySelector('.cc-total')?.textContent || '';
+                const exam = inputs[7]?.value || '';
+                const moy = row.querySelector('.final-grade')?.textContent || '';
+                
+                doc.text(cc, 170, y);
+                doc.text(exam, 185, y);
+                doc.text(moy, 200, y);
+                
+                y += 5;
+            });
+            
+            doc.save(`Notes_${specialty}_${group}_${semester}.pdf`);
+        }
+
+        function exportGradesExcel() {
+            const specialty = document.getElementById('gradeSpecialty')?.value || 'DIB';
+            const group = document.getElementById('gradeGroup')?.value || 'G01';
+            const semester = document.getElementById('gradeSemester')?.value || 's3';
+            const teacher = specialty === 'DIB' ? 'Mehiaoui Yasmina Mahdia' : 'Tounsi Khaled';
+            
+            const data = [
+                ['المدرسة الوطنية العليا للأشغال العمومية'],
+                ['École Nationale Supérieure des Travaux Publics'],
+                ['National Higher School of Public Works'],
+                [],
+                ['Relevé de Notes - MEF'],
+                [`Spécialité: ${specialty}`, `Groupe: ${group}`, `Semestre: ${semester.toUpperCase()}`],
+                [`Enseignant: ${teacher}`],
+                [],
+                ['N°', 'Matricule', 'Nom', 'Prénom', 'Présence/2', 'Participation/5', 'Interro/10', 'Cours/3', 'CC/20', 'Examen/20', 'Moyenne']
+            ];
+            
+            const rows = document.querySelectorAll('#gradesTableBody tr');
+            rows.forEach((row, idx) => {
+                const inputs = row.querySelectorAll('input');
+                const cc = row.querySelector('.cc-total')?.textContent || '';
+                const moy = row.querySelector('.final-grade')?.textContent || '';
+                
+                data.push([
+                    idx + 1,
+                    inputs[0]?.value || '',
+                    inputs[1]?.value || '',
+                    inputs[2]?.value || '',
+                    inputs[3]?.value || '',
+                    inputs[4]?.value || '',
+                    inputs[5]?.value || '',
+                    inputs[6]?.value || '',
+                    cc,
+                    inputs[7]?.value || '',
+                    moy
+                ]);
+            });
+            
+            const ws = XLSX.utils.aoa_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Notes");
+            XLSX.writeFile(wb, `Notes_${specialty}_${group}_${semester}.xlsx`);
         }
 
         // Populate Universities for Exams
@@ -1902,8 +2617,9 @@
             
             universitiesData.forEach(uni => {
                 const card = document.createElement('div');
-                card.className = 'university-card-new';
+                card.className = 'university-card-new cursor-pointer';
                 card.setAttribute('data-region', uni.region);
+                card.onclick = () => showUniversityExams(uni.name);
                 card.innerHTML = `
                     <div class="university-header bg-gradient-to-br ${uni.color}">
                         <div class="university-logo bg-gradient-to-br ${uni.color}">
@@ -1916,18 +2632,43 @@
                         <div class="flex justify-center gap-4 mb-4">
                             <span class="px-3 py-1 bg-enstp-cream rounded-full text-xs font-semibold text-enstp-navy">${uni.exams} Examens</span>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <button onclick="showUniversityPDFs('${uni.name}')" class="py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                                <i class="fas fa-file-alt mr-2"></i>Examens PDF
-                            </button>
-                            <button onclick="showUniversityPDFs('${uni.name}')" class="py-2 rounded-lg border-2 border-enstp-navy text-enstp-navy text-sm font-semibold hover:bg-enstp-navy hover:text-white transition-all flex items-center justify-center">
-                                <i class="fas fa-folder-open mr-2"></i>Cours
-                            </button>
-                        </div>
+                        <button class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-file-alt mr-2"></i>Voir les examens
+                        </button>
                     </div>
                 `;
                 grid.appendChild(card);
             });
+        }
+
+        function showUniversityExams(uniName) {
+            const uni = universitiesData.find(u => u.name === uniName);
+            if (!uni || !uni.examFiles) return;
+            
+            // Create modal for exams
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 z-50 flex items-center justify-center p-4';
+            modal.innerHTML = `
+                <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" onclick="this.parentElement.remove()"></div>
+                <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[80vh] overflow-hidden shadow-2xl relative z-10">
+                    <div class="bg-gradient-to-r from-enstp-navy to-enstp-blue p-6 text-white">
+                        <h3 class="font-bold text-2xl">${uni.name}</h3>
+                        <p class="text-enstp-gold">Examens disponibles</p>
+                    </div>
+                    <div class="p-6 overflow-y-auto max-h-[60vh]">
+                        ${uni.examFiles.map(exam => `
+                            <div class="exam-item" onclick="openPDF('${uni.pdfPath}${exam.file}', '${exam.name}'); this.closest('.fixed').remove();">
+                                <div>
+                                    <div class="exam-title font-semibold text-enstp-navy">${exam.name}</div>
+                                    <div class="text-xs text-gray-500">PDF • Cliquez pour ouvrir</div>
+                                </div>
+                                <i class="fas fa-chevron-right text-gray-400"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         // Populate Universities for Courses
@@ -1981,6 +2722,65 @@
             });
         }
 
+        // Video Categories
+        function populateVideoCategories() {
+            const grid = document.getElementById('videoCategories');
+            if (!grid) return;
+            
+            videoCategories.forEach(cat => {
+                const card = document.createElement('div');
+                card.className = 'video-category-card';
+                card.onclick = () => showVideosByCategory(cat);
+                card.innerHTML = `
+                    <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${cat.color} text-white flex items-center justify-center text-2xl mb-4 mx-auto">
+                        <i class="fas ${cat.icon}"></i>
+                    </div>
+                    <h3 class="font-bold text-center text-enstp-navy mb-2">${cat.name}</h3>
+                    <p class="text-center text-gray-500 text-sm">${cat.count} vidéos</p>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function showVideosByCategory(category) {
+            document.getElementById('videoCategories').classList.add('hidden');
+            document.getElementById('videosList').classList.remove('hidden');
+            document.getElementById('currentVideoCategory').textContent = category.name;
+            
+            const grid = document.getElementById('videosGrid');
+            grid.innerHTML = '';
+            
+            // Generate sample videos for category
+            for (let i = 1; i <= category.count; i++) {
+                const card = document.createElement('div');
+                card.className = 'video-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 cursor-pointer hover:shadow-xl transition-all';
+                card.onclick = () => window.open(`https://youtube.com/watch?v=example_${category.id}_${i}`, '_blank');
+                card.innerHTML = `
+                    <div class="relative h-48 bg-gradient-to-br ${category.color}">
+                        <div class="absolute inset-0 bg-black/40"></div>
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <i class="fas fa-play-circle text-5xl text-white/80"></i>
+                        </div>
+                        <div class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">15:30</div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold mb-2 line-clamp-2 text-enstp-navy">${category.name} - Partie ${i}</h4>
+                        <p class="text-sm text-gray-600 mb-2">ENSTP MEF Channel</p>
+                        <div class="flex items-center justify-between text-xs text-gray-500">
+                            <span><i class="fas fa-eye mr-1"></i>${(Math.random() * 10 + 1).toFixed(1)}k vues</span>
+                            <span><i class="fas fa-clock mr-1"></i>il y a 2 mois</span>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        function showVideoCategories() {
+            document.getElementById('videoCategories').classList.remove('hidden');
+            document.getElementById('videosList').classList.add('hidden');
+        }
+
         // Books
         function populateBooks() {
             const grid = document.getElementById('booksGrid');
@@ -2026,42 +2826,18 @@
             });
         }
 
-        // Videos
-        function populateVideos() {
-            const grid = document.getElementById('videosGrid');
-            if (!grid) return;
+        // TP Code Tabs
+        function switchCodeTab(lang) {
+            document.querySelectorAll('.code-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.code-content').forEach(content => content.classList.add('hidden'));
             
-            videosData.forEach(video => {
-                const card = document.createElement('div');
-                card.className = 'video-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100';
-                card.onclick = () => openVideo(video.title);
-                card.innerHTML = `
-                    <div class="relative h-48 ${video.thumbnail}">
-                        <div class="absolute inset-0 bg-black/40"></div>
-                        <div class="absolute inset-0 flex items-center justify-center">
-                            <i class="fas fa-play-circle play-btn text-6xl text-white/80 transition-all"></i>
-                        </div>
-                        <div class="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">${video.duration}</div>
-                        <div class="absolute top-2 left-2 px-2 py-1 bg-red-600 text-white text-xs rounded font-semibold">YouTube</div>
-                    </div>
-                    <div class="p-4">
-                        <h3 class="font-bold mb-2 line-clamp-2 text-enstp-navy">${video.title}</h3>
-                        <p class="text-sm text-gray-600 mb-2">${video.channel}</p>
-                        <div class="flex items-center justify-between text-xs text-gray-500">
-                            <span><i class="fas fa-eye mr-1"></i>${video.views} vues</span>
-                        </div>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
+            event.target.closest('.code-tab').classList.add('active');
+            document.getElementById(`code-${lang}`).classList.remove('hidden');
         }
 
-        function openVideo(title) {
-            alert('Ouverture de la vidéo: ' + title);
-        }
-
-        function loadMoreVideos() {
-            alert('Chargement de plus de vidéos...');
+        function downloadCode(filePath) {
+            alert(`Téléchargement de ${filePath}...`);
+            // In real implementation, this would trigger actual file download
         }
 
         // AI Chat
@@ -2076,7 +2852,6 @@
 
             const box = document.getElementById('aiChatBox');
             
-            // User message
             const userDiv = document.createElement('div');
             userDiv.className = 'flex items-start space-x-3 flex-row-reverse';
             userDiv.innerHTML = `
@@ -2087,7 +2862,6 @@
             input.value = '';
             box.scrollTop = box.scrollHeight;
 
-            // AI Response
             setTimeout(() => {
                 const responses = [
                     "Pour calculer la matrice de rigidité: [k] = (EA/L) × [[1, -1], [-1, 1]]",
@@ -2107,30 +2881,15 @@
         }
 
         // Utility functions
-        function showUniversityDetail(uniName) {
-            showUniversityPDFs(uniName);
-        }
-
-        function showUniversityCourses(uniName) {
-            showUniversityPDFs(uniName);
-        }
-
-        function showUniversityExams(uniName) {
-            showUniversityPDFs(uniName);
-        }
-
         function updateAttendanceTable() {
             const specialty = document.getElementById('attSpecialty').value;
             const group = document.getElementById('attGroup').value;
-            document.getElementById('attTableTitle').textContent = `${specialty.toUpperCase()} - Groupe ${group}`;
+            const semester = document.getElementById('attSemester').value;
+            document.getElementById('attTableTitle').textContent = `${specialty} - ${group} - ${semester.toUpperCase()}`;
         }
 
         function updateGradesTable() {
-            const specialty = document.getElementById('gradeSpecialty').value;
-            const group = document.getElementById('gradeGroup').value;
-            const semester = document.getElementById('gradeSemester').value;
-            const semName = semester === 's3' ? 'Semestre 03' : 'Semestre 04';
-            document.getElementById('gradesTableTitle').textContent = `${specialty.toUpperCase()} - Groupe ${group} - ${semName}`;
+            updateTeacherInfo();
         }
     </script>
 </body>
