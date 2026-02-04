@@ -33,501 +33,488 @@
             }
         }
     </script>
+    
     <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background-color: #FAF9F6;
-            color: #0A1628;
-            overflow-x: hidden;
-        }
-        .font-serif { font-family: 'Playfair Display', serif; }
-        .font-arabic { font-family: 'Noto Naskh Arabic', serif; }
-        .gradient-gold { background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 50%, #D4AF37 100%); }
-        .gradient-navy { background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 100%); }
-        .text-gradient-gold {
-            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-        .glass-premium {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        .card-luxury {
-            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-        }
-        .card-luxury:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.25);
-        }
-        .btn-gold {
-            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
-            color: white;
-            transition: all 0.3s ease;
-        }
-        .btn-gold:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
-        }
-        .nav-item {
-            position: relative;
-            padding: 0.5rem 0;
-        }
-        .nav-item::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            width: 0;
-            height: 2px;
-            background: #D4AF37;
-            transition: width 0.3s ease;
-        }
-        .nav-item:hover::after, .nav-item.active::after {
-            width: 100%;
-        }
-        #canvas-container {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-            opacity: 0.3;
-        }
-        .editable-table input {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            text-align: center;
-            font-size: 0.875rem;
-        }
-        .editable-table input:focus {
-            outline: none;
-            border-color: #D4AF37;
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
-        }
-        .editable-table select {
-            padding: 6px 12px;
-            border-radius: 6px;
-            border: 1px solid #e5e7eb;
-            font-size: 0.875rem;
-            cursor: pointer;
-        }
-        .editable-table select:focus {
-            outline: none;
-            border-color: #D4AF37;
-        }
-        .presence-present { background-color: #dcfce7; color: #166534; }
-        .presence-absent { background-color: #fee2e2; color: #991b1b; }
-        .presence-justified { background-color: #dbeafe; color: #1e40af; }
-        .back-btn {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            z-index: 40;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .back-btn:hover {
-            transform: translateY(-3px) scale(1.1);
-            box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
-        }
-        .university-card-new {
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        .university-card-new:hover {
-            transform: translateY(-5px);
-            border-color: #D4AF37;
-            box-shadow: 0 20px 40px rgba(10, 22, 40, 0.15);
-        }
-        .university-header {
-            height: 120px;
-            position: relative;
-            overflow: hidden;
-        }
-        .university-logo {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            border: 4px solid white;
-            position: absolute;
-            bottom: -40px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        }
-        .school-header {
-            background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 50%, #0A1628 100%);
-            position: relative;
-            overflow: hidden;
-        }
-        .school-header::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .logo-container {
-            width: 100px;
-            height: 100px;
-            background: white;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            border: 4px solid #D4AF37;
-        }
-        .trilingual-name {
-            text-align: center;
-            line-height: 1.6;
-        }
-        .trilingual-name .fr { font-family: 'Playfair Display', serif; }
-        .trilingual-name .ar { font-family: 'Noto Naskh Arabic', serif; font-size: 1.1em; }
-        .trilingual-name .en { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; }
-        .pdf-container {
-            width: 100%;
-            height: 600px;
-            border: 1px solid #e5e7eb;
-            border-radius: 12px;
-            margin-top: 1rem;
-        }
-        .pdf-list {
-            max-height: 400px;
-            overflow-y: auto;
-        }
-        .pdf-item {
-            transition: all 0.2s ease;
-        }
-        .pdf-item:hover {
-            background-color: #FAF9F6;
-            transform: translateX(5px);
-        }
-        .td-card {
-            transition: all 0.3s ease;
-            border: 2px solid transparent;
-        }
-        .td-card:hover {
-            transform: translateY(-5px);
-            border-color: #D4AF37;
-            box-shadow: 0 15px 35px rgba(10, 22, 40, 0.1);
-        }
-        .video-category-card {
-            background: white;
-            border-radius: 16px;
-            padding: 1.5rem;
-            border: 2px solid #e5e7eb;
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-        .video-category-card:hover {
-            border-color: #D4AF37;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
-        }
-        .code-tab {
-            padding: 0.75rem 1.5rem;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s ease;
-        }
-        .code-tab.active {
-            border-bottom-color: #D4AF37;
-            color: #D4AF37;
-            font-weight: 600;
-        }
-        .code-block {
-            background: #1e293b;
-            color: #e2e8f0;
-            padding: 1.5rem;
-            border-radius: 12px;
-            font-family: 'Consolas', 'Monaco', monospace;
-            overflow-x: auto;
-        }
-        .scholar-icon { color: #4285F4; }
-        .researchgate-icon { color: #00CCBB; }
-        .orcid-icon { color: #A6CE39; }
-        .contact-card {
-            background: white;
-            border-radius: 20px;
-            padding: 2rem;
-            border: 1px solid #e5e7eb;
-            transition: all 0.3s ease;
-        }
-        .contact-card:hover {
-            box-shadow: 0 20px 40px rgba(10, 22, 40, 0.1);
-            transform: translateY(-5px);
-        }
-        .social-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.875rem;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-        .social-link:hover {
-            transform: translateY(-2px);
-        }
-        .dropdown-menu {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-            min-width: 250px;
-            opacity: 0;
-            visibility: hidden;
-            transform: translateY(-10px);
-            transition: all 0.3s ease;
-            z-index: 100;
-            border: 1px solid #e5e7eb;
-        }
-        .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
-            transform: translateY(0);
-        }
-        .dropdown-item {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            border-bottom: 1px solid #f3f4f6;
-        }
-        .dropdown-item:hover {
-            background: #FAF9F6;
-            color: #D4AF37;
-        }
-        .dropdown-item:last-child {
-            border-bottom: none;
-        }
-        .exam-list {
-            max-height: 300px;
-            overflow-y: auto;
-        }
-        .exam-item {
-            padding: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .exam-item:hover {
-            background: #FAF9F6;
-        }
-        .exam-item:hover .exam-title {
-            color: #D4AF37;
-        }
-        /* Contact Cards with Photos */
-.contact-card-modern {
-    background: white;
-    border-radius: 24px;
-    overflow: hidden;
-    border: 1px solid #e5e7eb;
-    transition: all 0.4s ease;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-}
-
-.contact-card-modern:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 25px 50px -12px rgba(10, 22, 40, 0.15);
-}
-
-.contact-photo-container {
-    position: relative;
-    height: 200px;
-    overflow: hidden;
-}
-
-.contact-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center top;
-}
-
-.contact-photo-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 100px;
-    background: linear-gradient(to top, rgba(10, 22, 40, 0.9), transparent);
-}
-
-.contact-badge {
-    position: absolute;
-    bottom: 16px;
-    left: 16px;
-    right: 16px;
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.contact-avatar-small {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    border: 3px solid #D4AF37;
-    object-fit: cover;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-}
-
-.contact-info-header {
-    color: white;
-}
-
-.contact-name-card {
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-    line-height: 1.2;
-}
-
-.contact-role-card {
-    font-size: 0.85rem;
-    color: #D4AF37;
-    margin: 0;
-    font-weight: 500;
-}
-
-.contact-body {
-    padding: 24px;
-}
-
-.contact-detail {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid #f3f4f6;
-}
-
-.contact-detail:last-of-type {
-    border-bottom: none;
-}
-
-.contact-icon-box {
-    width: 40px;
-    height: 40px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.1rem;
-}
-
-.icon-email { background: #fef3c7; color: #D4AF37; }
-.icon-phone { background: #dbeafe; color: #1E3A8A; }
-.icon-scholar { background: #dbeafe; color: #4285F4; }
-.icon-researchgate { background: #ccfbf1; color: #00CCBB; }
-.icon-orcid { background: #ecfccb; color: #A6CE39; }
-
-.contact-text {
-    flex: 1;
-}
-
-.contact-label {
-    font-size: 0.75rem;
-    color: #9ca3af;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: 2px;
-}
-
-.contact-value {
-    font-size: 0.95rem;
-    color: #1f2937;
-    font-weight: 500;
-}
-
-.social-links-modern {
-    display: flex;
-    gap: 10px;
-    margin-top: 16px;
-    padding-top: 16px;
-    border-top: 1px solid #f3f4f6;
-}
-
-.social-btn {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    padding: 10px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-
-.social-scholar {
-    background: #eff6ff;
-    color: #4285F4;
-}
-
-.social-scholar:hover {
-    background: #4285F4;
-    color: white;
-}
-
-.social-researchgate {
-    background: #f0fdfa;
-    color: #00CCBB;
-}
-
-.social-researchgate:hover {
-    background: #00CCBB;
-    color: white;
-}
-
-.social-orcid {
-    background: #f7fee7;
-    color: #A6CE39;
-}
-
-.social-orcid:hover {
-    background: #A6CE39;
-    color: white;
-}
-    </style>
+    body {
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        background-color: #FAF9F6;
+        color: #0A1628;
+        overflow-x: hidden;
+    }
+    .font-serif { font-family: 'Playfair Display', serif; }
+    .font-arabic { font-family: 'Noto Naskh Arabic', serif; }
+    .gradient-gold { background: linear-gradient(135deg, #D4AF37 0%, #F4E4BC 50%, #D4AF37 100%); }
+    .gradient-navy { background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 100%); }
+    .text-gradient-gold {
+        background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+    .glass-premium {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(212, 175, 55, 0.2);
+    }
+    .card-luxury {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .card-luxury:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(212, 175, 55, 0.25);
+    }
+    .btn-gold {
+        background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+        color: white;
+        transition: all 0.3s ease;
+    }
+    .btn-gold:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+    }
+    .nav-item {
+        position: relative;
+        padding: 0.5rem 0;
+    }
+    .nav-item::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 0;
+        height: 2px;
+        background: #D4AF37;
+        transition: width 0.3s ease;
+    }
+    .nav-item:hover::after, .nav-item.active::after {
+        width: 100%;
+    }
+    #canvas-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.3;
+    }
+    .editable-table input {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+        text-align: center;
+        font-size: 0.875rem;
+    }
+    .editable-table input:focus {
+        outline: none;
+        border-color: #D4AF37;
+        box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+    }
+    .editable-table select {
+        padding: 6px 12px;
+        border-radius: 6px;
+        border: 1px solid #e5e7eb;
+        font-size: 0.875rem;
+        cursor: pointer;
+    }
+    .editable-table select:focus {
+        outline: none;
+        border-color: #D4AF37;
+    }
+    .presence-present { background-color: #dcfce7; color: #166534; }
+    .presence-absent { background-color: #fee2e2; color: #991b1b; }
+    .presence-justified { background-color: #dbeafe; color: #1e40af; }
+    .back-btn {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        z-index: 40;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .back-btn:hover {
+        transform: translateY(-3px) scale(1.1);
+        box-shadow: 0 15px 40px rgba(212, 175, 55, 0.5);
+    }
+    .university-card-new {
+        background: white;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .university-card-new:hover {
+        transform: translateY(-5px);
+        border-color: #D4AF37;
+        box-shadow: 0 20px 40px rgba(10, 22, 40, 0.15);
+    }
+    .university-header {
+        height: 120px;
+        position: relative;
+        overflow: hidden;
+    }
+    .university-logo {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 4px solid white;
+        position: absolute;
+        bottom: -40px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2rem;
+        font-weight: bold;
+        color: white;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .school-header {
+        background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 50%, #0A1628 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    .school-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23D4AF37' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .logo-container {
+        width: 100px;
+        height: 100px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        border: 4px solid #D4AF37;
+        overflow: hidden;
+    }
+    .logo-container img {
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+    }
+    .trilingual-name {
+        text-align: center;
+        line-height: 1.6;
+    }
+    .trilingual-name .fr { font-family: 'Playfair Display', serif; }
+    .trilingual-name .ar { font-family: 'Noto Naskh Arabic', serif; font-size: 1.1em; }
+    .trilingual-name .en { font-family: 'Plus Jakarta Sans', sans-serif; letter-spacing: 0.5px; }
+    .pdf-container {
+        width: 100%;
+        height: 600px;
+        border: 1px solid #e5e7eb;
+        border-radius: 12px;
+        margin-top: 1rem;
+    }
+    .pdf-list {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .pdf-item {
+        transition: all 0.2s ease;
+    }
+    .pdf-item:hover {
+        background-color: #FAF9F6;
+        transform: translateX(5px);
+    }
+    .td-card {
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    .td-card:hover {
+        transform: translateY(-5px);
+        border-color: #D4AF37;
+        box-shadow: 0 15px 35px rgba(10, 22, 40, 0.1);
+    }
+    .video-category-card {
+        background: white;
+        border-radius: 16px;
+        padding: 1.5rem;
+        border: 2px solid #e5e7eb;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .video-category-card:hover {
+        border-color: #D4AF37;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(212, 175, 55, 0.15);
+    }
+    .code-tab {
+        padding: 0.75rem 1.5rem;
+        cursor: pointer;
+        border-bottom: 3px solid transparent;
+        transition: all 0.3s ease;
+    }
+    .code-tab.active {
+        border-bottom-color: #D4AF37;
+        color: #D4AF37;
+        font-weight: 600;
+    }
+    .code-block {
+        background: #1e293b;
+        color: #e2e8f0;
+        padding: 1.5rem;
+        border-radius: 12px;
+        font-family: 'Consolas', 'Monaco', monospace;
+        overflow-x: auto;
+    }
+    .scholar-icon { color: #4285F4; }
+    .researchgate-icon { color: #00CCBB; }
+    .orcid-icon { color: #A6CE39; }
+    .contact-card {
+        background: white;
+        border-radius: 20px;
+        padding: 2rem;
+        border: 1px solid #e5e7eb;
+        transition: all 0.3s ease;
+    }
+    .contact-card:hover {
+        box-shadow: 0 20px 40px rgba(10, 22, 40, 0.1);
+        transform: translateY(-5px);
+    }
+    .social-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .social-link:hover {
+        transform: translateY(-2px);
+    }
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        min-width: 250px;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(-10px);
+        transition: all 0.3s ease;
+        z-index: 100;
+        border: 1px solid #e5e7eb;
+    }
+    .dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .dropdown-item {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .dropdown-item:hover {
+        background: #FAF9F6;
+        color: #D4AF37;
+    }
+    .dropdown-item:last-child {
+        border-bottom: none;
+    }
+    .exam-list {
+        max-height: 300px;
+        overflow-y: auto;
+    }
+    .exam-item {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .exam-item:hover {
+        background: #FAF9F6;
+    }
+    .exam-item:hover .exam-title {
+        color: #D4AF37;
+    }
+    
+    /* Contact Photos - NEW STYLES */
+    .contact-photo-card {
+        background: white;
+        border-radius: 24px;
+        overflow: hidden;
+        border: 1px solid #e5e7eb;
+        transition: all 0.4s ease;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    }
+    .contact-photo-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(10, 22, 40, 0.15);
+    }
+    .contact-photo-header {
+        position: relative;
+        height: 280px;
+        overflow: hidden;
+    }
+    .contact-photo-main {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center 20%;
+    }
+    .contact-photo-gradient {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 150px;
+        background: linear-gradient(to top, rgba(10, 22, 40, 0.95), transparent);
+    }
+    .contact-photo-info {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 20px;
+        display: flex;
+        align-items: flex-end;
+        gap: 16px;
+    }
+    .contact-avatar-large {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        border: 4px solid #D4AF37;
+        object-fit: cover;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        background: white;
+    }
+    .contact-text-white {
+        color: white;
+        flex: 1;
+    }
+    .contact-name-large {
+        font-size: 1.3rem;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+    }
+    .contact-role-large {
+        font-size: 0.95rem;
+        color: #D4AF37;
+        margin: 4px 0 0 0;
+        font-weight: 500;
+    }
+    .contact-body-modern {
+        padding: 24px;
+    }
+    .contact-item-modern {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 14px 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .contact-item-modern:last-of-type {
+        border-bottom: none;
+    }
+    .contact-icon-modern {
+        width: 44px;
+        height: 44px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        flex-shrink: 0;
+    }
+    .icon-bg-email { background: #fef3c7; color: #D4AF37; }
+    .icon-bg-phone { background: #dbeafe; color: #1E3A8A; }
+    .icon-bg-specialty { background: #fce7f3; color: #be185d; }
+    .contact-content {
+        flex: 1;
+    }
+    .contact-label-small {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 2px;
+    }
+    .contact-value-normal {
+        font-size: 0.95rem;
+        color: #1f2937;
+        font-weight: 500;
+    }
+    .social-bar {
+        display: flex;
+        gap: 10px;
+        margin-top: 16px;
+        padding-top: 16px;
+        border-top: 1px solid #f3f4f6;
+    }
+    .social-btn-modern {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 12px;
+        border-radius: 10px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .btn-scholar { background: #eff6ff; color: #4285F4; }
+    .btn-scholar:hover { background: #4285F4; color: white; }
+    .btn-rg { background: #f0fdfa; color: #00CCBB; }
+    .btn-rg:hover { background: #00CCBB; color: white; }
+    .btn-orcid { background: #f7fee7; color: #A6CE39; }
+    .btn-orcid:hover { background: #A6CE39; color: white; }
+    
+    /* Photo placeholder when no image */
+    .photo-placeholder {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        background: linear-gradient(135deg, #0A1628 0%, #1E3A8A 100%);
+    }
+    .photo-placeholder i {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+    .photo-placeholder-text {
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+</style>
 </head>
 <body class="antialiased">
 
@@ -1719,6 +1706,7 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
         </section>
 
         <!-- CONTACT SECTION - REDESIGNED WITH PHOTOS -->
+<!-- CONTACT SECTION -->
 <section id="contact-section" class="hidden py-16 bg-enstp-gray">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
@@ -1741,42 +1729,44 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
             </div>
         </div>
 
-        <!-- Contact Cards Grid -->
+        <!-- Contact Cards with Photos -->
         <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
             
             <!-- Dr. Assas Taqiyeddine -->
-            <div class="contact-card-modern">
-                <!-- Photo Header -->
-                <div class="contact-photo-container bg-gradient-to-br from-enstp-navy to-enstp-blue">
-                    <!-- ضع صورة الدكتور هنا -->
-                    <img src="images/photos/dr-assas.jpg" alt="Dr. Assas Taqiyeddine" class="contact-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                    
-                    <!-- Fallback if no image -->
-                    <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                        <i class="fas fa-user-tie"></i>
-                    </div>
-                    
-                    <div class="contact-photo-overlay"></div>
-                    <div class="contact-badge">
-                        <!-- صورة مصغرة دائرية -->
-                        <img src="images/photos/dr-assas.jpg" alt="TA" class="contact-avatar-small" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect width=%2260%22 height=%2260%22 fill=%22%23D4AF37%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2224%22 fill=%22white%22 font-weight=%22bold%22%3ETA%3C/text%3E%3C/svg%3E'">
-                        <div class="contact-info-header">
-                            <h3 class="contact-name-card">Dr. Assas Taqiyeddine</h3>
-                            <p class="contact-role-card">Responsable des TD</p>
+            <div class="contact-photo-card">
+                <div class="contact-photo-header">
+                    <!-- الصورة الرئيسية - غيّر المسار هنا -->
+                    <img 
+                        src="images/photos/dr-assas.jpg" 
+                        alt="Dr. Assas Taqiyeddine" 
+                        class="contact-photo-main"
+                        onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'photo-placeholder\'><i class=\'fas fa-user-tie\'></i><span class=\'photo-placeholder-text\'>Dr. Assas Taqiyeddine</span></div>';"
+                    >
+                    <div class="contact-photo-gradient"></div>
+                    <div class="contact-photo-info">
+                        <!-- الصورة الدائرية - نفس المسار -->
+                        <img 
+                            src="images/photos/dr-assas.jpg" 
+                            alt="TA" 
+                            class="contact-avatar-large"
+                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Ccircle cx=%2240%22 cy=%2240%22 r=%2240%22 fill=%22%23D4AF37%22/%3E%3Ctext x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2230%22 fill=%22white%22 font-weight=%22bold%22%3ETA%3C/text%3E%3C/svg%3E';"
+                        >
+                        <div class="contact-text-white">
+                            <h3 class="contact-name-large">Dr. Assas Taqiyeddine</h3>
+                            <p class="contact-role-large">Responsable des TD</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contact Details -->
-                <div class="contact-body">
+                <div class="contact-body-modern">
                     <!-- Email -->
-                    <div class="contact-detail">
-                        <div class="contact-icon-box icon-email">
+                    <div class="contact-item-modern">
+                        <div class="contact-icon-modern icon-bg-email">
                             <i class="fas fa-envelope"></i>
                         </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Email</div>
-                            <div class="contact-value">taqiyeddine.assas@univ-biskra.dz</div>
+                        <div class="contact-content">
+                            <div class="contact-label-small">Email</div>
+                            <div class="contact-value-normal">taqiyeddine.assas@univ-biskra.dz</div>
                         </div>
                         <a href="mailto:taqiyeddine.assas@univ-biskra.dz" class="text-enstp-gold hover:text-enstp-navy">
                             <i class="fas fa-external-link-alt"></i>
@@ -1784,13 +1774,13 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
                     </div>
 
                     <!-- Phone -->
-                    <div class="contact-detail">
-                        <div class="contact-icon-box icon-phone">
+                    <div class="contact-item-modern">
+                        <div class="contact-icon-modern icon-bg-phone">
                             <i class="fas fa-phone"></i>
                         </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Téléphone</div>
-                            <div class="contact-value">0670876131</div>
+                        <div class="contact-content">
+                            <div class="contact-label-small">Téléphone</div>
+                            <div class="contact-value-normal">0670876131</div>
                         </div>
                         <a href="tel:0670876131" class="text-enstp-gold hover:text-enstp-navy">
                             <i class="fas fa-phone-alt"></i>
@@ -1798,16 +1788,16 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
                     </div>
 
                     <!-- Social Links -->
-                    <div class="social-links-modern">
-                        <a href="https://scholar.google.com/scholar?hl=fr&q=assas+taqiyeddine" target="_blank" class="social-btn social-scholar">
+                    <div class="social-bar">
+                        <a href="https://scholar.google.com/scholar?hl=fr&q=assas+taqiyeddine" target="_blank" class="social-btn-modern btn-scholar">
                             <i class="fas fa-graduation-cap"></i>
                             <span>Scholar</span>
                         </a>
-                        <a href="https://www.researchgate.net/profile/Taqiyeddine-Assas" target="_blank" class="social-btn social-researchgate">
+                        <a href="https://www.researchgate.net/profile/Taqiyeddine-Assas" target="_blank" class="social-btn-modern btn-rg">
                             <i class="fab fa-researchgate"></i>
                             <span>RG</span>
                         </a>
-                        <a href="https://orcid.org/0009-0001-4288-2908" target="_blank" class="social-btn social-orcid">
+                        <a href="https://orcid.org/0009-0001-4288-2908" target="_blank" class="social-btn-modern btn-orcid">
                             <i class="fas fa-id-badge"></i>
                             <span>ORCID</span>
                         </a>
@@ -1816,49 +1806,51 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
             </div>
 
             <!-- Mme Mehiaoui Hadjebar -->
-            <div class="contact-card-modern">
-                <!-- Photo Header -->
-                <div class="contact-photo-container bg-gradient-to-br from-enstp-gold to-yellow-600">
-                    <!-- ضع صورة الأستاذة هنا -->
-                    <img src="images/photos/mme-mehiaoui.jpg" alt="Mme Mehiaoui Hadjebar" class="contact-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
-                    
-                    <!-- Fallback if no image -->
-                    <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; color: white; font-size: 4rem;">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    
-                    <div class="contact-photo-overlay"></div>
-                    <div class="contact-badge">
-                        <!-- صورة مصغرة دائرية -->
-                        <img src="images/photos/mme-mehiaoui.jpg" alt="MM" class="contact-avatar-small" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect width=%2260%22 height=%2260%22 fill=%22%230A1628%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2224%22 fill=%22white%22 font-weight=%22bold%22%3EMM%3C/text%3E%3C/svg%3E'">
-                        <div class="contact-info-header">
-                            <h3 class="contact-name-card">Mme Mehiaoui Hadjebar</h3>
-                            <p class="contact-role-card">Responsable du Cours</p>
+            <div class="contact-photo-card">
+                <div class="contact-photo-header" style="background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);">
+                    <!-- الصورة الرئيسية - غيّر المسار هنا -->
+                    <img 
+                        src="images/photos/mme-mehiaoui.jpg" 
+                        alt="Mme Mehiaoui Hadjebar" 
+                        class="contact-photo-main"
+                        onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'photo-placeholder\' style=\'background: linear-gradient(135deg, #D4AF37 0%, #B8941F 100%);\'><i class=\'fas fa-user-graduate\'></i><span class=\'photo-placeholder-text\'>Mme Mehiaoui Hadjebar</span></div>';"
+                    >
+                    <div class="contact-photo-gradient"></div>
+                    <div class="contact-photo-info">
+                        <!-- الصورة الدائرية - نفس المسار -->
+                        <img 
+                            src="images/photos/mme-mehiaoui.jpg" 
+                            alt="MM" 
+                            class="contact-avatar-large"
+                            onerror="this.onerror=null; this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2280%22 height=%2280%22%3E%3Ccircle cx=%2240%22 cy=%2240%22 r=%2240%22 fill=%22%230A1628%22/%3E%3Ctext x=%2250%25%22 y=%2255%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22Arial%22 font-size=%2230%22 fill=%22white%22 font-weight=%22bold%22%3EMM%3C/text%3E%3C/svg%3E';"
+                        >
+                        <div class="contact-text-white">
+                            <h3 class="contact-name-large">Mme Mehiaoui Hadjebar</h3>
+                            <p class="contact-role-large">Responsable du Cours</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contact Details -->
-                <div class="contact-body">
+                <div class="contact-body-modern">
                     <!-- Specialty -->
-                    <div class="contact-detail">
-                        <div class="contact-icon-box" style="background: #fef3c7; color: #D4AF37;">
+                    <div class="contact-item-modern">
+                        <div class="contact-icon-modern icon-bg-specialty">
                             <i class="fas fa-graduation-cap"></i>
                         </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Spécialité</div>
-                            <div class="contact-value">DIB - Génie Civil</div>
+                        <div class="contact-content">
+                            <div class="contact-label-small">Spécialité</div>
+                            <div class="contact-value-normal">DIB - Génie Civil</div>
                         </div>
                     </div>
 
                     <!-- Email -->
-                    <div class="contact-detail">
-                        <div class="contact-icon-box icon-email">
+                    <div class="contact-item-modern">
+                        <div class="contact-icon-modern icon-bg-email">
                             <i class="fas fa-envelope"></i>
                         </div>
-                        <div class="contact-text">
-                            <div class="contact-label">Email</div>
-                            <div class="contact-value">m.mahiaoui@enstp.edu.dz</div>
+                        <div class="contact-content">
+                            <div class="contact-label-small">Email</div>
+                            <div class="contact-value-normal">m.mahiaoui@enstp.edu.dz</div>
                         </div>
                         <a href="mailto:m.mahiaoui@enstp.edu.dz" class="text-enstp-gold hover:text-enstp-navy">
                             <i class="fas fa-external-link-alt"></i>
@@ -1866,12 +1858,12 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
                     </div>
 
                     <!-- Social Links -->
-                    <div class="social-links-modern">
-                        <a href="https://scholar.google.com/scholar?hl=fr&q=Mahdia+Yasmina+Mehiaoui" target="_blank" class="social-btn social-scholar">
+                    <div class="social-bar">
+                        <a href="https://scholar.google.com/scholar?hl=fr&q=Mahdia+Yasmina+Mehiaoui" target="_blank" class="social-btn-modern btn-scholar">
                             <i class="fas fa-graduation-cap"></i>
                             <span>Google Scholar</span>
                         </a>
-                        <a href="https://www.researchgate.net/profile/Mahdia-Mehiaoui" target="_blank" class="social-btn social-researchgate">
+                        <a href="https://www.researchgate.net/profile/Mahdia-Mehiaoui" target="_blank" class="social-btn-modern btn-rg">
                             <i class="fab fa-researchgate"></i>
                             <span>ResearchGate</span>
                         </a>
@@ -1904,7 +1896,6 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
         </div>
     </div>
 </section>
-
         <!-- FOOTER -->
         <footer class="bg-enstp-navy text-white py-16">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
