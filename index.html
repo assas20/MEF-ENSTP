@@ -352,6 +352,181 @@
         .exam-item:hover .exam-title {
             color: #D4AF37;
         }
+        /* Contact Cards with Photos */
+.contact-card-modern {
+    background: white;
+    border-radius: 24px;
+    overflow: hidden;
+    border: 1px solid #e5e7eb;
+    transition: all 0.4s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.contact-card-modern:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px -12px rgba(10, 22, 40, 0.15);
+}
+
+.contact-photo-container {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+
+.contact-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+}
+
+.contact-photo-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 100px;
+    background: linear-gradient(to top, rgba(10, 22, 40, 0.9), transparent);
+}
+
+.contact-badge {
+    position: absolute;
+    bottom: 16px;
+    left: 16px;
+    right: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.contact-avatar-small {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 3px solid #D4AF37;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+}
+
+.contact-info-header {
+    color: white;
+}
+
+.contact-name-card {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.contact-role-card {
+    font-size: 0.85rem;
+    color: #D4AF37;
+    margin: 0;
+    font-weight: 500;
+}
+
+.contact-body {
+    padding: 24px;
+}
+
+.contact-detail {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+
+.contact-detail:last-of-type {
+    border-bottom: none;
+}
+
+.contact-icon-box {
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.1rem;
+}
+
+.icon-email { background: #fef3c7; color: #D4AF37; }
+.icon-phone { background: #dbeafe; color: #1E3A8A; }
+.icon-scholar { background: #dbeafe; color: #4285F4; }
+.icon-researchgate { background: #ccfbf1; color: #00CCBB; }
+.icon-orcid { background: #ecfccb; color: #A6CE39; }
+
+.contact-text {
+    flex: 1;
+}
+
+.contact-label {
+    font-size: 0.75rem;
+    color: #9ca3af;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.contact-value {
+    font-size: 0.95rem;
+    color: #1f2937;
+    font-weight: 500;
+}
+
+.social-links-modern {
+    display: flex;
+    gap: 10px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #f3f4f6;
+}
+
+.social-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.social-scholar {
+    background: #eff6ff;
+    color: #4285F4;
+}
+
+.social-scholar:hover {
+    background: #4285F4;
+    color: white;
+}
+
+.social-researchgate {
+    background: #f0fdfa;
+    color: #00CCBB;
+}
+
+.social-researchgate:hover {
+    background: #00CCBB;
+    color: white;
+}
+
+.social-orcid {
+    background: #f7fee7;
+    color: #A6CE39;
+}
+
+.social-orcid:hover {
+    background: #A6CE39;
+    color: white;
+}
     </style>
 </head>
 <body class="antialiased">
@@ -1543,138 +1718,192 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
             </div>
         </section>
 
-        <!-- CONTACT SECTION - REDESIGNED -->
-        <section id="contact-section" class="hidden py-16 bg-enstp-gray">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Contact 📞</h2>
-                    <p class="text-gray-600">Responsables de la matière MEF</p>
+        <!-- CONTACT SECTION - REDESIGNED WITH PHOTOS -->
+<section id="contact-section" class="hidden py-16 bg-enstp-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Contact 📞</h2>
+            <p class="text-gray-600">Responsables de la matière MEF</p>
+        </div>
+
+        <!-- School Header -->
+        <div class="max-w-3xl mx-auto mb-12">
+            <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <div class="trilingual-name text-center mb-6">
+                    <div class="ar font-arabic text-2xl text-enstp-gold font-bold mb-2">المدرسة الوطنية العليا للأشغال العمومية</div>
+                    <div class="fr font-serif text-xl text-enstp-navy font-bold">École Nationale Supérieure des Travaux Publics</div>
+                    <div class="en text-gray-600 mt-1">National Higher School of Public Works</div>
                 </div>
-
-                <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
-                    <!-- Dr. Assas Taqiyeddine -->
-                    <div class="contact-card">
-                        <div class="flex items-center space-x-4 mb-6">
-                            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-enstp-navy to-enstp-blue flex items-center justify-center text-white text-2xl font-bold">
-                                TA
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-2xl text-enstp-navy">Dr. Assas Taqiyeddine</h3>
-                                <p class="text-enstp-gold font-semibold">Responsable des TD</p>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div class="flex items-center space-x-3 text-gray-700">
-                                <i class="fas fa-envelope text-enstp-gold w-5"></i>
-                                <span>taqiyeddine.assas@univ-biskra.dz</span>
-                            </div>
-                            <div class="flex items-center space-x-3 text-gray-700">
-                                <i class="fas fa-phone text-enstp-gold w-5"></i>
-                                <span>0670876131</span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-3">
-                            <a href="https://scholar.google.com/scholar?hl=fr&q=assas+taqiyeddine" target="_blank" class="social-link bg-blue-50 text-blue-600 hover:bg-blue-100">
-                                <i class="fas fa-graduation-cap scholar-icon"></i>
-                                Google Scholar
-                            </a>
-                            <a href="https://www.researchgate.net/profile/Taqiyeddine-Assas" target="_blank" class="social-link bg-teal-50 text-teal-600 hover:bg-teal-100">
-                                <i class="fab fa-researchgate researchgate-icon"></i>
-                                ResearchGate
-                            </a>
-                            <a href="https://orcid.org/0009-0001-4288-2908" target="_blank" class="social-link bg-green-50 text-green-600 hover:bg-green-100">
-                                <i class="fas fa-id-badge orcid-icon"></i>
-                                ORCID
-                            </a>
-                        </div>
-                    </div>
-
-                    <!-- Mme Mehiaoui Hadjebar -->
-                    <div class="contact-card">
-                        <div class="flex items-center space-x-4 mb-6">
-                            <div class="w-20 h-20 rounded-full bg-gradient-to-br from-enstp-gold to-yellow-500 flex items-center justify-center text-white text-2xl font-bold">
-                                MM
-                            </div>
-                            <div>
-                                <h3 class="font-bold text-2xl text-enstp-navy">Mme Mehiaoui Hadjebar</h3>
-                                <p class="text-enstp-gold font-semibold">Responsable du Cours</p>
-                                <p class="text-sm text-gray-500">DIB - Génie Civil</p>
-                            </div>
-                        </div>
-                        
-                        <div class="space-y-4 mb-6">
-                            <div class="flex items-center space-x-3 text-gray-700">
-                                <i class="fas fa-envelope text-enstp-gold w-5"></i>
-                                <span>m.mahiaoui@enstp.edu.dz</span>
-                            </div>
-                        </div>
-
-                        <div class="flex flex-wrap gap-3">
-                            <a href="https://scholar.google.com/scholar?hl=fr&q=Mahdia+Yasmina+Mehiaoui" target="_blank" class="social-link bg-blue-50 text-blue-600 hover:bg-blue-100">
-                                <i class="fas fa-graduation-cap scholar-icon"></i>
-                                Google Scholar
-                            </a>
-                            <a href="https://www.researchgate.net/profile/Mahdia-Mehiaoui" target="_blank" class="social-link bg-teal-50 text-teal-600 hover:bg-teal-100">
-                                <i class="fab fa-researchgate researchgate-icon"></i>
-                                ResearchGate
-                            </a>
-                        </div>
-                    </div>
+                <div class="text-center text-gray-500">
+                    <i class="fas fa-map-marker-alt text-enstp-gold mr-2"></i>
+                    1, Rue Sidi Garidi, Kouba, Alger
                 </div>
+            </div>
+        </div>
 
-                <!-- School Info -->
-                <div class="mt-12 bg-white rounded-2xl shadow-lg p-8 border border-gray-100 max-w-4xl mx-auto">
-                    <div class="text-center mb-6">
-                        <div class="trilingual-name mb-4">
-                            <div class="ar font-arabic text-2xl text-enstp-gold font-bold mb-2">المدرسة الوطنية العليا للأشغال العمومية</div>
-                            <div class="fr font-serif text-xl text-enstp-navy font-bold">École Nationale Supérieure des Travaux Publics</div>
-                            <div class="en text-gray-600 mt-1">National Higher School of Public Works</div>
-                        </div>
+        <!-- Contact Cards Grid -->
+        <div class="grid lg:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            
+            <!-- Dr. Assas Taqiyeddine -->
+            <div class="contact-card-modern">
+                <!-- Photo Header -->
+                <div class="contact-photo-container bg-gradient-to-br from-enstp-navy to-enstp-blue">
+                    <!-- ضع صورة الدكتور هنا -->
+                    <img src="images/photos/dr-assas.jpg" alt="Dr. Assas Taqiyeddine" class="contact-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    
+                    <!-- Fallback if no image -->
+                    <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                        <i class="fas fa-user-tie"></i>
                     </div>
                     
-                    <div class="grid md:grid-cols-3 gap-6 text-center">
-                        <div class="p-4 bg-enstp-cream rounded-xl">
-                            <i class="fas fa-map-marker-alt text-2xl text-enstp-gold mb-2"></i>
-                            <p class="text-sm font-semibold">1, Rue Sidi Garidi<br>Kouba, Alger</p>
-                        </div>
-                        <div class="p-4 bg-enstp-cream rounded-xl">
-                            <i class="fas fa-envelope text-2xl text-enstp-gold mb-2"></i>
-                            <p class="text-sm font-semibold">contact@enstp.edu.dz</p>
-                        </div>
-                        <div class="p-4 bg-enstp-cream rounded-xl">
-                            <i class="fas fa-globe text-2xl text-enstp-gold mb-2"></i>
-                            <p class="text-sm font-semibold">www.enstp.edu.dz</p>
+                    <div class="contact-photo-overlay"></div>
+                    <div class="contact-badge">
+                        <!-- صورة مصغرة دائرية -->
+                        <img src="images/photos/dr-assas.jpg" alt="TA" class="contact-avatar-small" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect width=%2260%22 height=%2260%22 fill=%22%23D4AF37%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2224%22 fill=%22white%22 font-weight=%22bold%22%3ETA%3C/text%3E%3C/svg%3E'">
+                        <div class="contact-info-header">
+                            <h3 class="contact-name-card">Dr. Assas Taqiyeddine</h3>
+                            <p class="contact-role-card">Responsable des TD</p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Contact Form -->
-                <div class="mt-12 max-w-2xl mx-auto">
-                    <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
-                        <h3 class="font-bold text-xl mb-6 text-center">Envoyer un message</h3>
-                        <form class="space-y-4" onsubmit="event.preventDefault(); alert('Message envoyé !');">
-                            <div class="grid md:grid-cols-2 gap-4">
-                                <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Nom" required>
-                                <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Prénom" required>
-                            </div>
-                            <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Email" required>
-                            <select class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
-                                <option>Destinataire</option>
-                                <option>Dr. Assas Taqiyeddine (Responsable TD)</option>
-                                <option>Mme Mehiaoui Hadjebar (Responsable Cours)</option>
-                                <option>Administration ENSTP</option>
-                            </select>
-                            <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Votre message..." required></textarea>
-                            <button type="submit" class="w-full py-4 rounded-xl bg-enstp-navy text-white font-bold hover:bg-opacity-90 transition-all">
-                                <i class="fas fa-paper-plane mr-2"></i>Envoyer le message
-                            </button>
-                        </form>
+                <!-- Contact Details -->
+                <div class="contact-body">
+                    <!-- Email -->
+                    <div class="contact-detail">
+                        <div class="contact-icon-box icon-email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value">taqiyeddine.assas@univ-biskra.dz</div>
+                        </div>
+                        <a href="mailto:taqiyeddine.assas@univ-biskra.dz" class="text-enstp-gold hover:text-enstp-navy">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+
+                    <!-- Phone -->
+                    <div class="contact-detail">
+                        <div class="contact-icon-box icon-phone">
+                            <i class="fas fa-phone"></i>
+                        </div>
+                        <div class="contact-text">
+                            <div class="contact-label">Téléphone</div>
+                            <div class="contact-value">0670876131</div>
+                        </div>
+                        <a href="tel:0670876131" class="text-enstp-gold hover:text-enstp-navy">
+                            <i class="fas fa-phone-alt"></i>
+                        </a>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-links-modern">
+                        <a href="https://scholar.google.com/scholar?hl=fr&q=assas+taqiyeddine" target="_blank" class="social-btn social-scholar">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Scholar</span>
+                        </a>
+                        <a href="https://www.researchgate.net/profile/Taqiyeddine-Assas" target="_blank" class="social-btn social-researchgate">
+                            <i class="fab fa-researchgate"></i>
+                            <span>RG</span>
+                        </a>
+                        <a href="https://orcid.org/0009-0001-4288-2908" target="_blank" class="social-btn social-orcid">
+                            <i class="fas fa-id-badge"></i>
+                            <span>ORCID</span>
+                        </a>
                     </div>
                 </div>
             </div>
-        </section>
+
+            <!-- Mme Mehiaoui Hadjebar -->
+            <div class="contact-card-modern">
+                <!-- Photo Header -->
+                <div class="contact-photo-container bg-gradient-to-br from-enstp-gold to-yellow-600">
+                    <!-- ضع صورة الأستاذة هنا -->
+                    <img src="images/photos/mme-mehiaoui.jpg" alt="Mme Mehiaoui Hadjebar" class="contact-photo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                    
+                    <!-- Fallback if no image -->
+                    <div style="display: none; width: 100%; height: 100%; align-items: center; justify-content: center; color: white; font-size: 4rem;">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    
+                    <div class="contact-photo-overlay"></div>
+                    <div class="contact-badge">
+                        <!-- صورة مصغرة دائرية -->
+                        <img src="images/photos/mme-mehiaoui.jpg" alt="MM" class="contact-avatar-small" onerror="this.src='data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22%3E%3Crect width=%2260%22 height=%2260%22 fill=%22%230A1628%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 dominant-baseline=%22middle%22 text-anchor=%22middle%22 font-family=%22sans-serif%22 font-size=%2224%22 fill=%22white%22 font-weight=%22bold%22%3EMM%3C/text%3E%3C/svg%3E'">
+                        <div class="contact-info-header">
+                            <h3 class="contact-name-card">Mme Mehiaoui Hadjebar</h3>
+                            <p class="contact-role-card">Responsable du Cours</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Contact Details -->
+                <div class="contact-body">
+                    <!-- Specialty -->
+                    <div class="contact-detail">
+                        <div class="contact-icon-box" style="background: #fef3c7; color: #D4AF37;">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div class="contact-text">
+                            <div class="contact-label">Spécialité</div>
+                            <div class="contact-value">DIB - Génie Civil</div>
+                        </div>
+                    </div>
+
+                    <!-- Email -->
+                    <div class="contact-detail">
+                        <div class="contact-icon-box icon-email">
+                            <i class="fas fa-envelope"></i>
+                        </div>
+                        <div class="contact-text">
+                            <div class="contact-label">Email</div>
+                            <div class="contact-value">m.mahiaoui@enstp.edu.dz</div>
+                        </div>
+                        <a href="mailto:m.mahiaoui@enstp.edu.dz" class="text-enstp-gold hover:text-enstp-navy">
+                            <i class="fas fa-external-link-alt"></i>
+                        </a>
+                    </div>
+
+                    <!-- Social Links -->
+                    <div class="social-links-modern">
+                        <a href="https://scholar.google.com/scholar?hl=fr&q=Mahdia+Yasmina+Mehiaoui" target="_blank" class="social-btn social-scholar">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>Google Scholar</span>
+                        </a>
+                        <a href="https://www.researchgate.net/profile/Mahdia-Mehiaoui" target="_blank" class="social-btn social-researchgate">
+                            <i class="fab fa-researchgate"></i>
+                            <span>ResearchGate</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="mt-12 max-w-2xl mx-auto">
+            <div class="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
+                <h3 class="font-bold text-xl mb-6 text-center">Envoyer un message</h3>
+                <form class="space-y-4" onsubmit="event.preventDefault(); alert('Message envoyé !');">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Nom" required>
+                        <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Prénom" required>
+                    </div>
+                    <input type="email" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Email" required>
+                    <select class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none">
+                        <option>Destinataire</option>
+                        <option>Dr. Assas Taqiyeddine (Responsable TD)</option>
+                        <option>Mme Mehiaoui Hadjebar (Responsable Cours)</option>
+                    </select>
+                    <textarea rows="4" class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-enstp-gold focus:outline-none" placeholder="Votre message..." required></textarea>
+                    <button type="submit" class="w-full py-4 rounded-xl bg-enstp-navy text-white font-bold hover:bg-opacity-90 transition-all">
+                        <i class="fas fa-paper-plane mr-2"></i>Envoyer le message
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
 
         <!-- FOOTER -->
         <footer class="bg-enstp-navy text-white py-16">
