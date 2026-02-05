@@ -1257,218 +1257,370 @@
         </section>
 
         <!-- TP SECTION - NEW -->
-        <section id="tp-section" class="hidden py-16 bg-enstp-gray">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-12">
-                    <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Travaux Pratiques 💻</h2>
-                    <p class="text-gray-600">Fichiers PDF et codes sources pour la MEF</p>
-                </div>
+        <!-- TP SECTION - COMPLETE -->
+<section id="tp-section" class="hidden py-16 bg-enstp-gray">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <h2 class="font-serif text-4xl font-bold text-enstp-navy mb-4">Travaux Pratiques 💻</h2>
+            <p class="text-gray-600">Fichiers PDF, codes sources et vidéos explicatives pour la MEF</p>
+        </div>
 
-                <!-- TP List -->
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
-                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 text-white flex items-center justify-center text-2xl mb-4">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-enstp-navy mb-2">TP 01 - Introduction MATLAB</h3>
-                        <p class="text-gray-600 text-sm mb-4">Premiers pas avec MATLAB pour la MEF</p>
-                        <button onclick="openPDF('tp/TP01_Intro_Matlab.pdf', 'TP 01 - Introduction MATLAB')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                            <i class="fas fa-download mr-2"></i>Télécharger PDF
-                        </button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
-                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-green-500 to-green-700 text-white flex items-center justify-center text-2xl mb-4">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-enstp-navy mb-2">TP 02 - Éléments Barres</h3>
-                        <p class="text-gray-600 text-sm mb-4">Implémentation des éléments barres</p>
-                        <button onclick="openPDF('tp/TP02_Elements_Barres.pdf', 'TP 02 - Éléments Barres')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                            <i class="fas fa-download mr-2"></i>Télécharger PDF
-                        </button>
-                    </div>
-                    <div class="bg-white rounded-2xl shadow-lg p-6 border border-gray-100 hover:shadow-xl transition-all">
-                        <div class="w-16 h-16 rounded-xl bg-gradient-to-br from-purple-500 to-purple-700 text-white flex items-center justify-center text-2xl mb-4">
-                            <i class="fas fa-file-pdf"></i>
-                        </div>
-                        <h3 class="font-bold text-xl text-enstp-navy mb-2">TP 03 - Structures 2D – États plans</h3>
-                        <p class="text-gray-600 text-sm mb-4">Génération et visualisation de maillages</p>
-                        <button onclick="openPDF('tp/TP03_Maillage_2D.pdf', 'Structures 2D – États plans')" class="w-full py-2 rounded-lg bg-enstp-navy text-white text-sm font-semibold hover:bg-opacity-90">
-                            <i class="fas fa-download mr-2"></i>Télécharger PDF
-                        </button>
-                    </div>
+        <!-- TP List - All 7 TPs -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-12" id="tpList">
+            
+            <!-- TP 01 : Ressorts -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="01">
+                <div class="h-40 bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center relative">
+                    <i class="fas fa-compress-arrows-alt text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-blue-600 shadow-lg">01</div>
                 </div>
-
-                <!-- Code Resources -->
-                <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
-                    <div class="p-6 bg-enstp-navy text-white">
-                        <h3 class="font-bold text-xl">Ressources Code</h3>
-                        <p class="text-gray-300 text-sm mt-1">Codes sources et bibliothèques</p>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Les éléments Ressorts</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Introduction aux éléments finis unidimensionnels</p>
+                    
+                    <!-- Mode Tabs -->
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('01', 'web')" class="tp-tab-01-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('01', 'youtube')" class="tp-tab-01-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('01', 'pdf')" class="tp-tab-01-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
                     </div>
                     
-                    <!-- Tabs -->
-                    <div class="flex border-b border-gray-200 overflow-x-auto">
-                        <div class="code-tab active" onclick="switchCodeTab('matlab')">
-                            <i class="fas fa-calculator mr-2"></i>MATLAB
+                    <!-- Content Areas -->
+                    <div id="tp-content-01-web" class="tp-content-01">
+                        <a href="tp/TP01_Ressorts_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-01-youtube" class="tp-content-01 hidden">
+                        <a href="https://youtube.com/watch?v=TP01_Ressorts" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-01-pdf" class="tp-content-01 hidden">
+                        <button onclick="openPDF('tp/TP01_Ressorts.pdf', 'TP N°01 - Ressorts')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP 02 : Barres -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="02">
+                <div class="h-40 bg-gradient-to-br from-green-500 to-green-700 flex items-center justify-center relative">
+                    <i class="fas fa-minus text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-green-600 shadow-lg">02</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Les éléments Barres</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Éléments finis pour structures en traction/compression</p>
+                    
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('02', 'web')" class="tp-tab-02-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('02', 'youtube')" class="tp-tab-02-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('02', 'pdf')" class="tp-tab-02-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
+                    </div>
+                    
+                    <div id="tp-content-02-web" class="tp-content-02">
+                        <a href="tp/TP02_Barres_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-02-youtube" class="tp-content-02 hidden">
+                        <a href="https://youtube.com/watch?v=TP02_Barres" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-02-pdf" class="tp-content-02 hidden">
+                        <button onclick="openPDF('tp/TP02_Barres.pdf', 'TP N°02 - Barres')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP 03 : Treillis -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="03">
+                <div class="h-40 bg-gradient-to-br from-purple-500 to-purple-700 flex items-center justify-center relative">
+                    <i class="fas fa-project-diagram text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-purple-600 shadow-lg">03</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Les éléments Barres en Treillis</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Structures réticulées planes et spatiales</p>
+                    
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('03', 'web')" class="tp-tab-03-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('03', 'youtube')" class="tp-tab-03-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('03', 'pdf')" class="tp-tab-03-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
+                    </div>
+                    
+                    <div id="tp-content-03-web" class="tp-content-03">
+                        <a href="tp/TP03_Treillis_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-03-youtube" class="tp-content-03 hidden">
+                        <a href="https://youtube.com/watch?v=TP03_Treillis" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-03-pdf" class="tp-content-03 hidden">
+                        <button onclick="openPDF('tp/TP03_Treillis.pdf', 'TP N°03 - Treillis')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP 04 : Poutres -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="04">
+                <div class="h-40 bg-gradient-to-br from-orange-500 to-orange-700 flex items-center justify-center relative">
+                    <i class="fas fa-grip-lines text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-orange-600 shadow-lg">04</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Les éléments Poutres</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Flexion et moment fléchissant</p>
+                    
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('04', 'web')" class="tp-tab-04-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('04', 'youtube')" class="tp-tab-04-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('04', 'pdf')" class="tp-tab-04-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
+                    </div>
+                    
+                    <div id="tp-content-04-web" class="tp-content-04">
+                        <a href="tp/TP04_Poutres_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-04-youtube" class="tp-content-04 hidden">
+                        <a href="https://youtube.com/watch?v=TP04_Poutres" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-04-pdf" class="tp-content-04 hidden">
+                        <button onclick="openPDF('tp/TP04_Poutres.pdf', 'TP N°04 - Poutres')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP 05 : Structures 2D -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="05">
+                <div class="h-40 bg-gradient-to-br from-red-500 to-red-700 flex items-center justify-center relative">
+                    <i class="fas fa-square text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-red-600 shadow-lg">05</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Structures 2D – États plans</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Contraintes planes et déformations planes</p>
+                    
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('05', 'web')" class="tp-tab-05-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('05', 'youtube')" class="tp-tab-05-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('05', 'pdf')" class="tp-tab-05-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
+                    </div>
+                    
+                    <div id="tp-content-05-web" class="tp-content-05">
+                        <a href="tp/TP05_Structures2D_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-05-youtube" class="tp-content-05 hidden">
+                        <a href="https://youtube.com/watch?v=TP05_Structures2D" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-05-pdf" class="tp-content-05 hidden">
+                        <button onclick="openPDF('tp/TP05_Structures2D.pdf', 'TP N°05 - Structures 2D')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP 06 : Transformation -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="06">
+                <div class="h-40 bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center relative">
+                    <i class="fas fa-shapes text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-teal-600 shadow-lg">06</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Transformation géométrique et fonctions de forme</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Isoparamétrique et interpolation</p>
+                    
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('06', 'web')" class="tp-tab-06-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('06', 'youtube')" class="tp-tab-06-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('06', 'pdf')" class="tp-tab-06-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
+                    </div>
+                    
+                    <div id="tp-content-06-web" class="tp-content-06">
+                        <a href="tp/TP06_Transformation_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-06-youtube" class="tp-content-06 hidden">
+                        <a href="https://youtube.com/watch?v=TP06_Transformation" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-06-pdf" class="tp-content-06 hidden">
+                        <button onclick="openPDF('tp/TP06_Transformation.pdf', 'TP N°06 - Transformation')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TP 07 : Isoparamétrique -->
+            <div class="tp-card bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100 hover:shadow-xl transition-all" data-tp="07">
+                <div class="h-40 bg-gradient-to-br from-indigo-500 to-indigo-700 flex items-center justify-center relative">
+                    <i class="fas fa-cube text-6xl text-white/30"></i>
+                    <div class="absolute top-4 right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center font-bold text-xl text-indigo-600 shadow-lg">07</div>
+                </div>
+                <div class="p-5">
+                    <h3 class="font-bold text-lg text-enstp-navy mb-2">Formulation isoparamétrique</h3>
+                    <p class="text-gray-600 text-sm mb-4 h-10">Intégration numérique et éléments isoparamétriques</p>
+                    
+                    <div class="flex rounded-lg bg-gray-100 p-1 mb-4">
+                        <button onclick="showTPMode('07', 'web')" class="tp-tab-07-web flex-1 py-2 rounded-md text-sm font-semibold transition-all bg-white text-enstp-navy shadow-sm">Web</button>
+                        <button onclick="showTPMode('07', 'youtube')" class="tp-tab-07-youtube flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">YouTube</button>
+                        <button onclick="showTPMode('07', 'pdf')" class="tp-tab-07-pdf flex-1 py-2 rounded-md text-sm font-semibold transition-all text-gray-500 hover:text-enstp-navy">PDF</button>
+                    </div>
+                    
+                    <div id="tp-content-07-web" class="tp-content-07">
+                        <a href="tp/TP07_Isoparametrique_Web/index.html" target="_blank" class="block w-full py-3 rounded-lg bg-enstp-navy text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-globe mr-2"></i>Ouvrir en Web
+                        </a>
+                    </div>
+                    <div id="tp-content-07-youtube" class="tp-content-07 hidden">
+                        <a href="https://youtube.com/watch?v=TP07_Isoparametrique" target="_blank" class="block w-full py-3 rounded-lg bg-red-600 text-white text-center font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fab fa-youtube mr-2"></i>Voir sur YouTube
+                        </a>
+                    </div>
+                    <div id="tp-content-07-pdf" class="tp-content-07 hidden">
+                        <button onclick="openPDF('tp/TP07_Isoparametrique.pdf', 'TP N°07 - Isoparamétrique')" class="w-full py-3 rounded-lg bg-red-500 text-white font-semibold hover:bg-opacity-90 transition-all">
+                            <i class="fas fa-file-pdf mr-2"></i>Télécharger PDF
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Code Resources Section (Keep existing) -->
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden border border-gray-100">
+            <div class="p-6 bg-enstp-navy text-white">
+                <h3 class="font-bold text-xl">Ressources Code</h3>
+                <p class="text-gray-300 text-sm mt-1">Codes sources et bibliothèques pour tous les TP</p>
+            </div>
+            
+            <!-- Tabs -->
+            <div class="flex border-b border-gray-200 overflow-x-auto">
+                <div class="code-tab active" onclick="switchCodeTab('matlab')">
+                    <i class="fas fa-calculator mr-2"></i>MATLAB
+                </div>
+                <div class="code-tab" onclick="switchCodeTab('python')">
+                    <i class="fab fa-python mr-2"></i>Python
+                </div>
+                <div class="code-tab" onclick="switchCodeTab('java')">
+                    <i class="fab fa-java mr-2"></i>Java
+                </div>
+                <div class="code-tab" onclick="switchCodeTab('cpp')">
+                    <i class="fas fa-code mr-2"></i>C++
+                </div>
+            </div>
+
+            <!-- Content -->
+            <div class="p-6">
+                <!-- MATLAB -->
+                <div id="code-matlab" class="code-content">
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-enstp-navy mb-2">stiffness_matrix.m</h4>
+                            <p class="text-sm text-gray-600 mb-3">Calcul de la matrice de rigidité élémentaire</p>
+                            <button onclick="downloadCode('matlab/stiffness_matrix.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-download mr-2"></i>Télécharger
+                            </button>
                         </div>
-                        <div class="code-tab" onclick="switchCodeTab('python')">
-                            <i class="fab fa-python mr-2"></i>Python
-                        </div>
-                        <div class="code-tab" onclick="switchCodeTab('java')">
-                            <i class="fab fa-java mr-2"></i>Java
-                        </div>
-                        <div class="code-tab" onclick="switchCodeTab('cpp')">
-                            <i class="fas fa-code mr-2"></i>C++
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-enstp-navy mb-2">assemble.m</h4>
+                            <p class="text-sm text-gray-600 mb-3">Assemblage des matrices globales</p>
+                            <button onclick="downloadCode('matlab/assemble.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-download mr-2"></i>Télécharger
+                            </button>
                         </div>
                     </div>
-
-                    <!-- Content -->
-                    <div class="p-6">
-                        <!-- MATLAB -->
-                        <div id="code-matlab" class="code-content">
-                            <div class="grid md:grid-cols-2 gap-4 mb-4">
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">stiffness_matrix.m</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Calcul de la matrice de rigidité élémentaire</p>
-                                    <button onclick="downloadCode('matlab/stiffness_matrix.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">assemble.m</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Assemblage des matrices globales</p>
-                                    <button onclick="downloadCode('matlab/assemble.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">solve_system.m</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Résolution du système linéaire</p>
-                                    <button onclick="downloadCode('matlab/solve_system.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">plot_results.m</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Visualisation des résultats</p>
-                                    <button onclick="downloadCode('matlab/plot_results.m')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="code-block">
+                    <div class="code-block">
 <pre>function Ke = stiffness_matrix(E, A, L)
 % Matrice de rigidité élémentaire pour un élément barre
-% E: Module de Young
-% A: Section
-% L: Longueur
-
 Ke = (E*A/L) * [1 -1; -1 1];
 end</pre>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
-                        <!-- Python -->
-                        <div id="code-python" class="code-content hidden">
-                            <div class="grid md:grid-cols-2 gap-4 mb-4">
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">fem_core.py</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Cœur de calcul MEF avec NumPy</p>
-                                    <button onclick="downloadCode('python/fem_core.py')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">mesh_generator.py</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Générateur de maillage</p>
-                                    <button onclick="downloadCode('python/mesh_generator.py')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="code-block">
+                <!-- Python -->
+                <div id="code-python" class="code-content hidden">
+                    <div class="grid md:grid-cols-2 gap-4 mb-4">
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
+                            <h4 class="font-bold text-enstp-navy mb-2">fem_core.py</h4>
+                            <p class="text-sm text-gray-600 mb-3">Cœur de calcul MEF avec NumPy</p>
+                            <button onclick="downloadCode('python/fem_core.py')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                                <i class="fas fa-download mr-2"></i>Télécharger
+                            </button>
+                        </div>
+                    </div>
+                    <div class="code-block">
 <pre>import numpy as np
 
 def stiffness_matrix(E, A, L):
-    """Matrice de rigidité élémentaire"""
-    return (E * A / L) * np.array([[1, -1], [-1, 1]])
+    return (E * A / L) * np.array([[1, -1], [-1, 1]])</pre>
+                    </div>
+                </div>
 
-def assemble_global(K_global, Ke, nodes):
-    """Assemblage dans la matrice globale"""
-    for i, ni in enumerate(nodes):
-        for j, nj in enumerate(nodes):
-            K_global[ni, nj] += Ke[i, j]
-    return K_global</pre>
-                            </div>
-                        </div>
-
-                        <!-- Java -->
-                        <div id="code-java" class="code-content hidden">
-                            <div class="grid md:grid-cols-2 gap-4 mb-4">
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">FEMSolver.java</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Solveur MEF orienté objet</p>
-                                    <button onclick="downloadCode('java/FEMSolver.java')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">Element.java</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Classe élément fini</p>
-                                    <button onclick="downloadCode('java/Element.java')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="code-block">
+                <!-- Java -->
+                <div id="code-java" class="code-content hidden">
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 mb-4">
+                        <h4 class="font-bold text-enstp-navy mb-2">FEMSolver.java</h4>
+                        <p class="text-sm text-gray-600 mb-3">Solveur MEF orienté objet</p>
+                        <button onclick="downloadCode('java/FEMSolver.java')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-download mr-2"></i>Télécharger
+                        </button>
+                    </div>
+                    <div class="code-block">
 <pre>public class Element {
-    private double E, A, L;
-    private int[] nodes;
-    
     public double[][] getStiffnessMatrix() {
         double k = E * A / L;
         return new double[][]{{k, -k}, {-k, k}};
     }
 }</pre>
-                            </div>
-                        </div>
+                    </div>
+                </div>
 
-                        <!-- C++ -->
-                        <div id="code-cpp" class="code-content hidden">
-                            <div class="grid md:grid-cols-2 gap-4 mb-4">
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">fem_solver.cpp</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Solveur haute performance</p>
-                                    <button onclick="downloadCode('cpp/fem_solver.cpp')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                                <div class="p-4 bg-gray-50 rounded-xl border border-gray-200">
-                                    <h4 class="font-bold text-enstp-navy mb-2">matrix_ops.cpp</h4>
-                                    <p class="text-sm text-gray-600 mb-3">Opérations matricielles</p>
-                                    <button onclick="downloadCode('cpp/matrix_ops.cpp')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
-                                        <i class="fas fa-download mr-2"></i>Télécharger
-                                    </button>
-                                </div>
-                            </div>
-                            <div class="code-block">
-<pre>#include &lt;Eigen/Dense&gt;
-
-using namespace Eigen;
-
-MatrixXd stiffnessMatrix(double E, double A, double L) {
+                <!-- C++ -->
+                <div id="code-cpp" class="code-content hidden">
+                    <div class="p-4 bg-gray-50 rounded-xl border border-gray-200 mb-4">
+                        <h4 class="font-bold text-enstp-navy mb-2">fem_solver.cpp</h4>
+                        <p class="text-sm text-gray-600 mb-3">Solveur haute performance</p>
+                        <button onclick="downloadCode('cpp/fem_solver.cpp')" class="px-4 py-2 bg-enstp-navy text-white rounded-lg text-sm font-semibold hover:bg-opacity-90">
+                            <i class="fas fa-download mr-2"></i>Télécharger
+                        </button>
+                    </div>
+                    <div class="code-block">
+<pre>MatrixXd stiffnessMatrix(double E, double A, double L) {
     double k = E * A / L;
     MatrixXd Ke(2, 2);
-    Ke << k, -k,
-          -k, k;
+    Ke << k, -k, -k, k;
     return Ke;
 }</pre>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
-        </section>
-
+        </div>
+    </div>
+</section>
         <!-- HOMEWORK SECTION - REDESIGNED -->
         <section id="homework-section" class="hidden py-16 bg-enstp-gray">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -3086,7 +3238,28 @@ MatrixXd stiffnessMatrix(double E, double A, double L) {
                 box.scrollTop = box.scrollHeight;
             }, 1000);
         }
-
+// TP Mode Switcher
+function showTPMode(tpNumber, mode) {
+    // Hide all content for this TP
+    document.querySelectorAll(`.tp-content-${tpNumber}`).forEach(el => {
+        el.classList.add('hidden');
+    });
+    
+    // Show selected content
+    document.getElementById(`tp-content-${tpNumber}-${mode}`).classList.remove('hidden');
+    
+    // Update tab styles
+    ['web', 'youtube', 'pdf'].forEach(m => {
+        const tab = document.querySelector(`.tp-tab-${tpNumber}-${m}`);
+        if (m === mode) {
+            tab.classList.remove('text-gray-500', 'hover:text-enstp-navy');
+            tab.classList.add('bg-white', 'text-enstp-navy', 'shadow-sm');
+        } else {
+            tab.classList.add('text-gray-500', 'hover:text-enstp-navy');
+            tab.classList.remove('bg-white', 'text-enstp-navy', 'shadow-sm');
+        }
+    });
+}
         // Utility functions
         function updateAttendanceTable() {
             const specialty = document.getElementById('attSpecialty').value;
