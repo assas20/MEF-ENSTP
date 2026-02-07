@@ -34,24 +34,25 @@
 
 .school-margin-left {
     display: flex;
-    align-items: center;
-    gap: 20px;
+    flex-direction: column;  /* ← CHANGEMENT : vertical au lieu d'horizontal */
+    align-items: center;     /* ← CHANGEMENT : centré */
+    gap: 15px;               /* ← CHANGEMENT : espacement entre texte et logo */
     background: transparent;
     padding: 0;
     border-radius: 0;
     backdrop-filter: none;
 }
 
-.school-logo-small {
-    width: 50px;
-    height: 50px;
+.school-logo {
+    width: 80px;             /* ← CHANGEMENT : taille plus grande */
+    height: 80px;
     background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2em;
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    overflow: hidden;        /* ← AJOUT : pour garder le border-radius sur l'image */
 }
 
 .school-name-margin {
@@ -60,6 +61,7 @@
     text-transform: none;
     text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     animation: slideInLeft 0.8s ease-out;
+    text-align: center;      /* ← AJOUT : centré */
 }
 
 .school-subtitle-margin {
@@ -429,18 +431,18 @@
 <body>
     <!-- Marge supérieure avec info ENSTP -->
     <div class="page-header-margin">
-        <div class="school-margin-left">
-            <div class="school-logo">
-    <img src="MEF-ENSTP/td/logo_enstp.png" alt="Logo ENSTP" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
-</div>
-            <span class="school-name-margin" data-en="National Higher School of Public Works" data-fr="Ecole Nationale Supérieure des Travaux Publics">
-                Ecole Nationale Supérieure des Travaux Publics
-            </span>
-        </div>
-        <span class="school-subtitle-margin" data-en="2nd Year - Engineering Cycle" data-fr="2ème année - Cycle Ingénieur">
-            2ème année - Cycle Ingénieur
+    <div class="school-margin-left">
+        <span class="school-name-margin" data-en="National Higher School of Public Works" data-fr="Ecole Nationale Supérieure des Travaux Publics">
+            Ecole Nationale Supérieure des Travaux Publics
         </span>
+        <div class="school-logo">
+            <img src="MEF-ENSTP/td/logo_enstp.png" alt="Logo ENSTP" style="width: 100%; height: 100%; object-fit: contain; border-radius: 50%;">
+        </div>
     </div>
+    <span class="school-subtitle-margin" data-en="2nd Year - Engineering Cycle" data-fr="2ème année - Cycle Ingénieur">
+        2ème année - Cycle Ingénieur
+    </span>
+</div>
 
     <div class="container">
         <div class="header">
